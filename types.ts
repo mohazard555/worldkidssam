@@ -34,7 +34,43 @@ export interface Drawing {
 export interface FunFact {
   id: string;
   text: string;
+  imageUrl: string;
 }
+
+export interface AnimalFlashcard {
+    name: string;
+    image: string; // base64 svg
+}
+
+export interface AlphabetFlashcard {
+    letter: string;
+    word: string;
+    image: string; // emoji
+    color: string; // tailwind bg color
+}
+
+export interface ColorFlashcard {
+    name: string;
+    hex: string;
+}
+
+export interface NumberFlashcard {
+    number: number;
+    word: string;
+    representation: string; // emoji
+}
+
+export interface ShapeFlashcard {
+    name: string;
+    image: string; // base64 svg
+    colorClass: string;
+}
+
+export interface FunnyFlashcard {
+    name: string;
+    image: string; // emoji
+}
+
 
 export interface AppSettings {
   siteTitle: string;
@@ -50,6 +86,13 @@ export interface AppSettings {
   drawings: Drawing[];
   puzzleImages: ColoringPage[];
   funFacts: FunFact[];
+  animalFlashcards: AnimalFlashcard[];
+  colorFlashcards: ColorFlashcard[];
+  numberFlashcards: NumberFlashcard[];
+  shapeFlashcards: ShapeFlashcard[];
+  funnyFlashcards: FunnyFlashcard[];
+  arabicAlphabetData: AlphabetFlashcard[];
+  englishAlphabetData: AlphabetFlashcard[];
 }
 
 export interface Advertisement {

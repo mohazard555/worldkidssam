@@ -1,9 +1,10 @@
 import React, { useState, useContext, ChangeEvent, useRef } from 'react';
-import { AppData, Story, StoryPage, Advertisement, QuizQuestion, ColoringPage, Drawing, FunFact } from '../types';
+// FIX: Import AppSettings to resolve type errors in flashcard handlers.
+import { AppData, AppSettings, Story, StoryPage, Advertisement, QuizQuestion, ColoringPage, Drawing, FunFact, AnimalFlashcard, ColorFlashcard, NumberFlashcard, ShapeFlashcard, FunnyFlashcard, AlphabetFlashcard } from '../types';
 import { AppContext } from '../App';
-import { CloseIcon, SettingsIcon, BookIcon, GiftIcon, SyncIcon, TrashIcon, EditIcon, PlusIcon, MusicIcon, SparkleIcon, QuestionIcon, PaletteIcon, PuzzleIcon, LightbulbIcon } from './Icons';
+import { CloseIcon, SettingsIcon, BookIcon, GiftIcon, SyncIcon, TrashIcon, EditIcon, PlusIcon, MusicIcon, SparkleIcon, QuestionIcon, PaletteIcon, PuzzleIcon, LightbulbIcon, AbcIcon } from './Icons';
 
-export type Tab = 'general' | 'stories' | 'ads' | 'sync' | 'fun' | 'quizzes' | 'drawings' | 'puzzles' | 'facts';
+export type Tab = 'general' | 'stories' | 'ads' | 'sync' | 'fun' | 'quizzes' | 'drawings' | 'puzzles' | 'facts' | 'flashcards';
 
 const fileToBase64 = (file: File): Promise<string> => {
   return new Promise((resolve, reject) => {
@@ -273,6 +274,7 @@ const handleDeletePuzzleImage = (pageId: string) => {
     const newFact: FunFact = {
       id: `fact-${Date.now()}`,
       text: 'معلومة جديدة...',
+      imageUrl: '',
     };
     setLocalData(prev => ({ ...prev, settings: { ...prev.settings, funFacts: [...(prev.settings.funFacts || []), newFact] } }));
   };
@@ -284,7 +286,91 @@ const handleDeletePuzzleImage = (pageId: string) => {
   const handleFunFactChange = (factId: string, value: string) => {
     setLocalData(prev => ({ ...prev, settings: { ...prev.settings, funFacts: prev.settings.funFacts.map(f => f.id === factId ? { ...f, text: value } : f) }}));
   };
+  const handleFunFactImageChange = async (factId: string, e: ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+        const base64 = await fileToBase64(e.target.files[0]);
+        setLocalData(prev => ({
+            ...prev,
+            settings: { ...prev.settings, funFacts: prev.settings.funFacts.map(f => f.id === factId ? { ...f, imageUrl: base64 } : f) }
+        }));
+    }
+  };
 
+  // Flashcard Handlers
+  const handleAddFlashcard = (type: keyof AppSettings) => {
+    let newCard: any;
+    const colors = ['bg-red-500', 'bg-orange-500', 'bg-yellow-500', 'bg-lime-500', 'bg-green-500', 'bg-teal-500', 'bg-cyan-500', 'bg-sky-500', 'bg-blue-500', 'bg-indigo-500', 'bg-purple-500', 'bg-fuchsia-500', 'bg-pink-500', 'bg-rose-500'];
+    const randomColor = colors[Math.floor(Math.random() * colors.length)];
+     switch (type) {
+        case 'animalFlashcards':
+            newCard = { name: "حيوان جديد", image: '' };
+            break;
+        case 'colorFlashcards':
+            newCard = { name: "لون جديد", hex: '#ffffff' };
+            break;
+        case 'numberFlashcards':
+            newCard = { number: 0, word: "صفر", representation: '0️⃣' };
+            break;
+        case 'shapeFlashcards':
+            newCard = { name: "شكل جديد", image: '', colorClass: randomColor };
+            break;
+        case 'funnyFlashcards':
+            newCard = { name: "بطاقة جديدة", image: '🆕' };
+            break;
+        case 'arabicAlphabetData':
+            newCard = { letter: "؟", word: "كلمة", image: '✏️', color: randomColor };
+            break;
+        case 'englishAlphabetData':
+            newCard = { letter: "?", word: "word", image: '✏️', color: randomColor };
+            break;
+        default:
+            return;
+    }
+    setLocalData(prev => {
+        const currentCards = (prev.settings[type] as any[]) || [];
+        return {
+            ...prev,
+            settings: {
+                ...prev.settings,
+                [type]: [...currentCards, newCard]
+            }
+        };
+    });
+  };
+
+  const handleDeleteFlashcard = (type: keyof AppSettings, index: number) => {
+     if (!window.confirm("هل أنت متأكد من الحذف؟")) return;
+      setLocalData(prev => {
+        const currentCards = (prev.settings[type] as any[]) || [];
+        return {
+            ...prev,
+            settings: {
+                ...prev.settings,
+                [type]: currentCards.filter((_, i) => i !== index)
+            }
+        };
+    });
+  };
+  
+  const handleFlashcardChange = (type: keyof AppSettings, index: number, field: string, value: any) => {
+       setLocalData(prev => {
+        const currentCards = (prev.settings[type] as any[]) || [];
+        return {
+            ...prev,
+            settings: {
+                ...prev.settings,
+                [type]: currentCards.map((card, i) => i === index ? {...card, [field]: value} : card)
+            }
+        };
+    });
+  };
+
+   const handleFlashcardImageChange = async (type: keyof AppSettings, index: number, e: ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const base64 = await fileToBase64(e.target.files[0]);
+      handleFlashcardChange(type, index, 'image', base64);
+    }
+  };
 
   // Sync Handlers
   const handleGistChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -548,6 +634,138 @@ const handleDeletePuzzleImage = (pageId: string) => {
                 </div>
             </div>
         );
+        case 'flashcards': return (
+             <div className="space-y-4 max-h-[500px] overflow-y-auto pr-2">
+                <h3 className="text-xl font-bold text-slate-700">إدارة البطاقات التعليمية</h3>
+                
+                {/* Animal Flashcards */}
+                <details className="bg-blue-100 p-3 rounded-xl border-2 border-blue-200">
+                    <summary className="font-bold text-lg cursor-pointer flex justify-between items-center">
+                        <span>بطاقات الحيوانات</span>
+                        <button onClick={(e) => { e.preventDefault(); handleAddFlashcard('animalFlashcards'); }} className="p-1 text-green-600 hover:text-green-800"><PlusIcon className="w-5 h-5"/></button>
+                    </summary>
+                    <div className="mt-4 space-y-2">
+                        {(localData.settings.animalFlashcards || []).map((card, index) => (
+                            <div key={index} className="flex items-center space-x-2 space-x-reverse bg-white p-2 rounded-lg">
+                                <img src={card.image} alt={card.name} className="w-12 h-12 bg-slate-200 rounded object-contain"/>
+                                <input type="text" value={card.name} onChange={(e) => handleFlashcardChange('animalFlashcards', index, 'name', e.target.value)} className="flex-grow px-2 py-1 border rounded"/>
+                                <input type="file" accept="image/*" onChange={(e) => handleFlashcardImageChange('animalFlashcards', index, e)} className="text-xs w-28"/>
+                                <button onClick={() => handleDeleteFlashcard('animalFlashcards', index)} className="p-1 text-red-500"><TrashIcon className="w-5 h-5"/></button>
+                            </div>
+                        ))}
+                    </div>
+                </details>
+
+                 {/* Color Flashcards */}
+                <details className="bg-blue-100 p-3 rounded-xl border-2 border-blue-200">
+                    <summary className="font-bold text-lg cursor-pointer flex justify-between items-center">
+                        <span>بطاقات الألوان</span>
+                         <button onClick={(e) => { e.preventDefault(); handleAddFlashcard('colorFlashcards'); }} className="p-1 text-green-600 hover:text-green-800"><PlusIcon className="w-5 h-5"/></button>
+                    </summary>
+                     <div className="mt-4 space-y-2">
+                        {(localData.settings.colorFlashcards || []).map((card, index) => (
+                            <div key={index} className="flex items-center space-x-2 space-x-reverse bg-white p-2 rounded-lg">
+                                <input type="color" value={card.hex} onChange={(e) => handleFlashcardChange('colorFlashcards', index, 'hex', e.target.value)} className="w-12 h-12 rounded border-none cursor-pointer"/>
+                                <input type="text" value={card.name} onChange={(e) => handleFlashcardChange('colorFlashcards', index, 'name', e.target.value)} className="flex-grow px-2 py-1 border rounded"/>
+                                <button onClick={() => handleDeleteFlashcard('colorFlashcards', index)} className="p-1 text-red-500"><TrashIcon className="w-5 h-5"/></button>
+                            </div>
+                        ))}
+                    </div>
+                </details>
+
+                 {/* Number Flashcards */}
+                <details className="bg-blue-100 p-3 rounded-xl border-2 border-blue-200">
+                    <summary className="font-bold text-lg cursor-pointer flex justify-between items-center">
+                        <span>بطاقات الأرقام</span>
+                         <button onClick={(e) => { e.preventDefault(); handleAddFlashcard('numberFlashcards'); }} className="p-1 text-green-600 hover:text-green-800"><PlusIcon className="w-5 h-5"/></button>
+                    </summary>
+                     <div className="mt-4 space-y-2">
+                        {(localData.settings.numberFlashcards || []).map((card, index) => (
+                            <div key={index} className="grid grid-cols-4 gap-2 items-center bg-white p-2 rounded-lg">
+                                <input type="number" value={card.number} onChange={(e) => handleFlashcardChange('numberFlashcards', index, 'number', parseInt(e.target.value, 10))} className="w-full px-2 py-1 border rounded"/>
+                                <input type="text" value={card.word} onChange={(e) => handleFlashcardChange('numberFlashcards', index, 'word', e.target.value)} className="w-full px-2 py-1 border rounded"/>
+                                <input type="text" value={card.representation} onChange={(e) => handleFlashcardChange('numberFlashcards', index, 'representation', e.target.value)} className="w-full px-2 py-1 border rounded"/>
+                                <button onClick={() => handleDeleteFlashcard('numberFlashcards', index)} className="p-1 text-red-500 justify-self-center"><TrashIcon className="w-5 h-5"/></button>
+                            </div>
+                        ))}
+                    </div>
+                </details>
+
+                {/* Arabic Alphabet Flashcards */}
+                <details className="bg-blue-100 p-3 rounded-xl border-2 border-blue-200">
+                    <summary className="font-bold text-lg cursor-pointer flex justify-between items-center">
+                        <span>بطاقات الأحرف العربية</span>
+                         <button onClick={(e) => { e.preventDefault(); handleAddFlashcard('arabicAlphabetData'); }} className="p-1 text-green-600 hover:text-green-800"><PlusIcon className="w-5 h-5"/></button>
+                    </summary>
+                     <div className="mt-4 space-y-2">
+                        {(localData.settings.arabicAlphabetData || []).map((card, index) => (
+                            <div key={index} className="grid grid-cols-[auto_1fr_1fr_1fr_auto] gap-2 items-center bg-white p-2 rounded-lg">
+                                <img src={card.image} alt={card.word} className="w-10 h-10 bg-slate-200 rounded object-contain"/>
+                                <input type="text" value={card.letter} onChange={(e) => handleFlashcardChange('arabicAlphabetData', index, 'letter', e.target.value)} className="w-full px-2 py-1 border rounded" placeholder="الحرف"/>
+                                <input type="text" value={card.word} onChange={(e) => handleFlashcardChange('arabicAlphabetData', index, 'word', e.target.value)} className="w-full px-2 py-1 border rounded" placeholder="الكلمة"/>
+                                <input type="file" accept="image/*" onChange={(e) => handleFlashcardImageChange('arabicAlphabetData', index, e)} className="text-xs w-full"/>
+                                <button onClick={() => handleDeleteFlashcard('arabicAlphabetData', index)} className="p-1 text-red-500 justify-self-center"><TrashIcon className="w-5 h-5"/></button>
+                            </div>
+                        ))}
+                    </div>
+                </details>
+
+                 {/* English Alphabet Flashcards */}
+                <details className="bg-blue-100 p-3 rounded-xl border-2 border-blue-200">
+                    <summary className="font-bold text-lg cursor-pointer flex justify-between items-center">
+                        <span>بطاقات الأحرف الإنجليزية</span>
+                         <button onClick={(e) => { e.preventDefault(); handleAddFlashcard('englishAlphabetData'); }} className="p-1 text-green-600 hover:text-green-800"><PlusIcon className="w-5 h-5"/></button>
+                    </summary>
+                     <div className="mt-4 space-y-2">
+                        {(localData.settings.englishAlphabetData || []).map((card, index) => (
+                           <div key={index} className="grid grid-cols-[auto_1fr_1fr_1fr_auto] gap-2 items-center bg-white p-2 rounded-lg">
+                                <img src={card.image} alt={card.word} className="w-10 h-10 bg-slate-200 rounded object-contain"/>
+                                <input type="text" value={card.letter} onChange={(e) => handleFlashcardChange('englishAlphabetData', index, 'letter', e.target.value)} className="w-full px-2 py-1 border rounded" placeholder="Letter"/>
+                                <input type="text" value={card.word} onChange={(e) => handleFlashcardChange('englishAlphabetData', index, 'word', e.target.value)} className="w-full px-2 py-1 border rounded" placeholder="Word"/>
+                                <input type="file" accept="image/*" onChange={(e) => handleFlashcardImageChange('englishAlphabetData', index, e)} className="text-xs w-full"/>
+                                <button onClick={() => handleDeleteFlashcard('englishAlphabetData', index)} className="p-1 text-red-500 justify-self-center"><TrashIcon className="w-5 h-5"/></button>
+                            </div>
+                        ))}
+                    </div>
+                </details>
+
+                 {/* Shape Flashcards */}
+                <details className="bg-blue-100 p-3 rounded-xl border-2 border-blue-200">
+                    <summary className="font-bold text-lg cursor-pointer flex justify-between items-center">
+                        <span>بطاقات الأشكال</span>
+                         <button onClick={(e) => { e.preventDefault(); handleAddFlashcard('shapeFlashcards'); }} className="p-1 text-green-600 hover:text-green-800"><PlusIcon className="w-5 h-5"/></button>
+                    </summary>
+                     <div className="mt-4 space-y-2">
+                        {(localData.settings.shapeFlashcards || []).map((card, index) => (
+                           <div key={index} className="flex items-center space-x-2 space-x-reverse bg-white p-2 rounded-lg">
+                                <img src={card.image} alt={card.name} className="w-12 h-12 bg-slate-200 rounded object-contain"/>
+                                <input type="text" value={card.name} onChange={(e) => handleFlashcardChange('shapeFlashcards', index, 'name', e.target.value)} className="flex-grow px-2 py-1 border rounded"/>
+                                <input type="file" accept="image/*" onChange={(e) => handleFlashcardImageChange('shapeFlashcards', index, e)} className="text-xs w-28"/>
+                                <button onClick={() => handleDeleteFlashcard('shapeFlashcards', index)} className="p-1 text-red-500"><TrashIcon className="w-5 h-5"/></button>
+                            </div>
+                        ))}
+                    </div>
+                </details>
+
+                 {/* Funny Flashcards */}
+                <details className="bg-blue-100 p-3 rounded-xl border-2 border-blue-200">
+                    <summary className="font-bold text-lg cursor-pointer flex justify-between items-center">
+                        <span>بطاقات مضحكة</span>
+                         <button onClick={(e) => { e.preventDefault(); handleAddFlashcard('funnyFlashcards'); }} className="p-1 text-green-600 hover:text-green-800"><PlusIcon className="w-5 h-5"/></button>
+                    </summary>
+                     <div className="mt-4 space-y-2">
+                        {(localData.settings.funnyFlashcards || []).map((card, index) => (
+                           <div key={index} className="flex items-center space-x-2 space-x-reverse bg-white p-2 rounded-lg">
+                                <img src={card.image} alt={card.name} className="w-12 h-12 bg-slate-200 rounded object-contain"/>
+                                <input type="text" value={card.name} onChange={(e) => handleFlashcardChange('funnyFlashcards', index, 'name', e.target.value)} className="flex-grow px-2 py-1 border rounded"/>
+                                <input type="file" accept="image/*" onChange={(e) => handleFlashcardImageChange('funnyFlashcards', index, e)} className="text-xs w-28"/>
+                                <button onClick={() => handleDeleteFlashcard('funnyFlashcards', index)} className="p-1 text-red-500"><TrashIcon className="w-5 h-5"/></button>
+                            </div>
+                        ))}
+                    </div>
+                </details>
+             </div>
+        );
         case 'fun': return (
             <div className="space-y-4">
                 <h3 className="text-xl font-bold text-slate-700">إدارة قسم تلوين ومرح</h3>
@@ -669,17 +887,25 @@ const handleDeletePuzzleImage = (pageId: string) => {
                 </div>
                 <div className="space-y-3 max-h-[400px] overflow-y-auto pr-2">
                     {(localData.settings.funFacts || []).map((fact) => (
-                        <div key={fact.id} className="flex items-start space-x-2 space-x-reverse bg-blue-100 p-2 rounded-lg">
-                            <textarea
-                                value={fact.text}
-                                onChange={(e) => handleFunFactChange(fact.id, e.target.value)}
-                                rows={2}
-                                className="flex-grow px-3 py-2 bg-white border-2 border-blue-200 rounded-lg shadow-inner focus:ring-yellow-400 focus:border-yellow-400 resize-y"
-                                placeholder="اكتب المعلومة هنا..."
-                            />
+                        <div key={fact.id} className="bg-blue-100 p-3 rounded-xl border-2 border-blue-200">
+                            <div className="flex items-center space-x-3 space-x-reverse">
+                                {fact.imageUrl && <img src={fact.imageUrl} alt="fact preview" className="w-16 h-16 rounded-lg object-cover border-2 border-white" />}
+                                <div className="flex-grow">
+                                    <textarea
+                                        value={fact.text}
+                                        onChange={(e) => handleFunFactChange(fact.id, e.target.value)}
+                                        rows={2}
+                                        className="w-full px-3 py-2 bg-white border-2 border-blue-200 rounded-lg shadow-inner focus:ring-yellow-400 focus:border-yellow-400 resize-y"
+                                        placeholder="اكتب المعلومة هنا..."
+                                    />
+                                </div>
+                            </div>
+                             <div className="flex items-center justify-between mt-2">
+                                <input type="file" accept="image/*" onChange={(e) => handleFunFactImageChange(fact.id, e)} className="block w-full text-sm text-slate-500 file:py-1 file:px-3 file:rounded-full file:border-0 file:bg-yellow-100 file:text-yellow-700 hover:file:bg-yellow-200"/>
                             <button onClick={() => handleDeleteFunFact(fact.id)} className="p-2 text-red-600 hover:text-red-800 bg-red-100 rounded-full">
                                 <TrashIcon className="w-5 h-5"/>
                             </button>
+                             </div>
                         </div>
                     ))}
                 </div>
@@ -735,6 +961,7 @@ const handleDeletePuzzleImage = (pageId: string) => {
             <nav className="flex flex-row sm:flex-col justify-around sm:justify-start bg-blue-500/80 p-1 sm:p-2 sm:w-40 overflow-x-auto sm:overflow-x-hidden sm:overflow-y-auto">
                  <TabButton tab="general" icon={<SettingsIcon className="w-6 h-6" />} label="عام" />
                  <TabButton tab="stories" icon={<BookIcon className="w-6 h-6" />} label="القصص" />
+                 <TabButton tab="flashcards" icon={<AbcIcon className="w-6 h-6" />} label="بطاقات" />
                  <TabButton tab="fun" icon={<SparkleIcon className="w-6 h-6" />} label="تسلية" />
                  <TabButton tab="quizzes" icon={<QuestionIcon className="w-6 h-6" />} label="ألغاز" />
                  <TabButton tab="drawings" icon={<PaletteIcon className="w-6 h-6" />} label="المعرض" />

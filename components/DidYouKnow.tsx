@@ -1,29 +1,32 @@
-import React, { useState, useContext, useEffect } from 'react';
+import React, { useContext } from 'react';
 import { AppContext } from '../App';
-import { ChevronLeftIcon, ChevronRightIcon, LightbulbIcon } from './Icons';
+import { LightbulbIcon } from './Icons';
 import { FunFact } from '../types';
+
+const FactCard: React.FC<{ fact: FunFact }> = ({ fact }) => (
+    <div className="bg-slate-800 rounded-2xl shadow-lg overflow-hidden flex flex-col transition-transform duration-300 hover:scale-105">
+        <div className="aspect-video bg-slate-700">
+             {fact.imageUrl ? (
+                 <img src={fact.imageUrl} alt={fact.text.substring(0, 20)} className="w-full h-full object-cover"/>
+            ) : (
+                <div className="w-full h-full bg-gradient-to-br from-yellow-300 to-amber-400 flex items-center justify-center">
+                    <LightbulbIcon className="w-16 h-16 text-slate-800 opacity-20" />
+                </div>
+            )}
+        </div>
+        <div className="p-4 flex-grow flex items-center">
+            <p className="text-white text-base font-semibold text-center w-full">
+                {fact.text}
+            </p>
+        </div>
+    </div>
+);
+
 
 const DidYouKnow: React.FC = () => {
     const { appData } = useContext(AppContext)!;
-    const [currentIndex, setCurrentIndex] = useState(0);
     
     const facts = appData.settings.funFacts || [];
-
-    useEffect(() => {
-        setCurrentIndex(0);
-    }, [facts.length]);
-    
-    const goToPrevious = () => {
-        const isFirst = currentIndex === 0;
-        const newIndex = isFirst ? facts.length - 1 : currentIndex - 1;
-        setCurrentIndex(newIndex);
-    };
-
-    const goToNext = () => {
-        const isLast = currentIndex === facts.length - 1;
-        const newIndex = isLast ? 0 : currentIndex + 1;
-        setCurrentIndex(newIndex);
-    };
 
     if (facts.length === 0) {
         return (
@@ -36,34 +39,10 @@ const DidYouKnow: React.FC = () => {
 
     return (
         <div id="did-you-know-content" className="animate-fade-in">
-            <div className="relative w-full min-h-[150px] bg-gradient-to-br from-yellow-300 to-amber-400 rounded-2xl shadow-lg overflow-hidden p-6 flex flex-col items-center justify-center text-slate-800">
-                 <div className="absolute top-4 right-4 text-yellow-600/50">
-                    <LightbulbIcon className="w-16 h-16 opacity-30" />
-                 </div>
-                 
-                <p className="text-xl md:text-2xl font-bold text-center z-10" key={currentIndex}>
-                    {facts[currentIndex].text}
-                </p>
-
-                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 text-slate-700 bg-white/50 px-3 py-1 rounded-full text-sm font-bold">
-                    {facts.length} / {currentIndex + 1}
-                </div>
-
-                <button
-                    onClick={goToPrevious}
-                    className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 text-slate-800 bg-white/70 rounded-full p-2 hover:bg-white transition-all shadow-md z-10"
-                    aria-label="المعلومة السابقة"
-                >
-                    <ChevronLeftIcon className="w-7 h-7" />
-                </button>
-                <button
-                    onClick={goToNext}
-                    className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 text-slate-800 bg-white/70 rounded-full p-2 hover:bg-white transition-all shadow-md z-10"
-                    aria-label="المعلومة التالية"
-                >
-                    <ChevronRightIcon className="w-7 h-7" />
-                </button>
-
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {facts.map(fact => (
+                    <FactCard key={fact.id} fact={fact} />
+                ))}
             </div>
         </div>
     );

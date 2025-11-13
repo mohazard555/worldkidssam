@@ -15,12 +15,16 @@ import HabitatGame from './HabitatGame';
 import WeatherGame from './WeatherGame';
 import BehaviorGame from './BehaviorGame';
 import FeelingsGame from './FeelingsGame';
+import DesignCharacterGame from './DesignCharacterGame';
+import BuildHouseGame from './BuildHouseGame';
 
 import { 
-    PaletteIcon, PawIcon, AbcIcon, NumberIcon, ShapesIcon, SpotTheDifferenceIcon, OrderingGameIcon, FindObjectIcon, FirstLetterIcon, WordFormationIcon, AdditionIcon, ComparisonIcon, HabitatIcon, WeatherIcon, BehaviorIcon, FeelingsIcon
+    PaletteIcon, PawIcon, AbcIcon, NumberIcon, ShapesIcon, SpotTheDifferenceIcon, OrderingGameIcon, FindObjectIcon, FirstLetterIcon, WordFormationIcon, AdditionIcon, ComparisonIcon, HabitatIcon, WeatherIcon, BehaviorIcon, FeelingsIcon, DesignCharacterIcon, BuildHouseIcon
 } from './Icons';
 
-type Game = 'colors' | 'animals' | 'matching' | 'numbers' | 'shapes' | 'spot-the-difference' | 'ordering' | 'find-object' | 'first-letter' | 'word-formation' | 'addition' | 'comparison' | 'habitat' | 'weather' | 'behavior' | 'feelings' | null;
+// Fix: Split Game type to avoid using null as a Record key.
+type GameType = 'colors' | 'animals' | 'matching' | 'numbers' | 'shapes' | 'spot-the-difference' | 'ordering' | 'find-object' | 'first-letter' | 'word-formation' | 'addition' | 'comparison' | 'habitat' | 'weather' | 'behavior' | 'feelings' | 'design-character' | 'build-house';
+type Game = GameType | null;
 
 interface GameCardProps {
     onClick: () => void;
@@ -45,7 +49,8 @@ const GameCard: React.FC<GameCardProps> = ({ onClick, title, description, icon, 
 const InteractiveGames: React.FC = () => {
     const [activeGame, setActiveGame] = useState<Game>(null);
 
-    const gameComponents: Record<Game, React.ReactNode> = {
+    // Fix: Use GameType for the Record key and remove the null property.
+    const gameComponents: Record<GameType, React.ReactNode> = {
         'colors': <ColorGame onBack={() => setActiveGame(null)} />,
         'animals': <AnimalSoundsGame onBack={() => setActiveGame(null)} />,
         'matching': <MatchingGame onBack={() => setActiveGame(null)} />,
@@ -56,14 +61,14 @@ const InteractiveGames: React.FC = () => {
         'find-object': <FindObjectGame onBack={() => setActiveGame(null)} />,
         'first-letter': <FirstLetterGame onBack={() => setActiveGame(null)} />,
         'word-formation': <WordFormationGame onBack={() => setActiveGame(null)} />,
-        // FIX: The key 'count-things' is not a valid property in the 'Game' type. This line has been removed.
         'addition': <AdditionGame onBack={() => setActiveGame(null)} />,
         'comparison': <ComparisonGame onBack={() => setActiveGame(null)} />,
         'habitat': <HabitatGame onBack={() => setActiveGame(null)} />,
         'weather': <WeatherGame onBack={() => setActiveGame(null)} />,
         'behavior': <BehaviorGame onBack={() => setActiveGame(null)} />,
         'feelings': <FeelingsGame onBack={() => setActiveGame(null)} />,
-        null: null,
+        'design-character': <DesignCharacterGame onBack={() => setActiveGame(null)} />,
+        'build-house': <BuildHouseGame onBack={() => setActiveGame(null)} />,
     };
     
     if (activeGame && gameComponents[activeGame]) {
@@ -72,6 +77,8 @@ const InteractiveGames: React.FC = () => {
 
     return (
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 animate-fade-in">
+            <GameCard onClick={() => setActiveGame('design-character')} title="صمم شخصيتك" description="اختر الشعر والملابس" icon={<DesignCharacterIcon className="w-12 h-12" />} color="bg-gradient-to-br from-fuchsia-500 to-purple-600" />
+            <GameCard onClick={() => setActiveGame('build-house')} title="ابنِ منزلك" description="ضع الأبواب والنوافذ" icon={<BuildHouseIcon className="w-12 h-12" />} color="bg-gradient-to-br from-orange-400 to-amber-500" />
             <GameCard onClick={() => setActiveGame('first-letter')} title="أول حرف" description="اختر الحرف الأول للكلمة" icon={<FirstLetterIcon className="w-12 h-12" />} color="bg-gradient-to-br from-red-500 to-orange-500" />
             <GameCard onClick={() => setActiveGame('word-formation')} title="كوّن الكلمة" description="رتب الحروف لتكوين كلمة" icon={<WordFormationIcon className="w-12 h-12" />} color="bg-gradient-to-br from-yellow-500 to-lime-500" />
             <GameCard onClick={() => setActiveGame('numbers')} title="عد الأشياء" description="تعلم العد والأرقام" icon={<NumberIcon className="w-12 h-12" />} color="bg-gradient-to-br from-green-500 to-teal-500" />
