@@ -15,6 +15,7 @@ import PuzzleGame from './components/PuzzleGame';
 import DidYouKnow from './components/DidYouKnow';
 import InteractiveGames from './components/InteractiveGames';
 import Flashcards from './components/Flashcards';
+import CartoonBox from './components/CartoonBox';
 
 type View = 'home' | 'ad' | 'youtube' | 'story';
 type MainTab = 'stories' | 'games' | 'fun' | 'flashcards';
@@ -42,6 +43,8 @@ const DEFAULT_APP_DATA: AppData = {
         backgroundImageUrl: '',
         developerName: '',
         developerLink: '',
+        siteNotice: "مرحباً يا أصدقاء! لا تنسوا تفقد قسم الألعاب التفاعلية الممتعة!",
+        aboutSectionText: "أهلاً بكم في عالم قصص الأطفال! هنا يمكنكم قراءة القصص الجميلة، اللعب بالألعاب المسلية، تلوين الصور الرائعة، ومشاهدة الفيديوهات الممتعة. نتمنى لكم وقتاً سعيداً!",
         coloringPages: [],
         quizzes: [
             {
@@ -68,7 +71,7 @@ const DEFAULT_APP_DATA: AppData = {
             {
                 id: 'fact-2',
                 text: 'النمل لا ينام أبدًا!',
-                imageUrl: 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgZmlsbD0iI0E2NzY1OCI+PC9yZWN0PjxyZWN0IHg9IjQwIiB5PSI0MCIgd2lkdGg9IjIwIiBoZWlnaHQ9IjMwIiByeD0iMTAiIGZpbGw9IiMzNzE5MEUiPjwvcmVjdD48cmVjdCB4PSIyMCIgeT0iNTAiIHdpZHRoPSI2MCIgaGVpZ2h0PSIyMCIgcng9IjEwIiBmaWxsPSIjNTk0MDA4Ij48L3JlY3Q+PGNpcmNsZSBjeD0iNTAiIGN5PSIzMCIgcj0iMTAiIGZpbGw9IiMzNzE5MEUiPjwvY2lyY2xlPjwvc3ZnPg==',
+                imageUrl: 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgZmlsbD0iI0E2NzY1OCI+PC9yZWN0PjxyZWN0IHg9IjQwIiB5PSI0MCIgd2lkdGg9IjIwIiBoZWlnaHQ9IjMwIiByeD0iMTAiIGZpbGw9IiMzNzE5MEUiPjwvcmVjdD48cmVjdCB4PSIyMCIgeT0iNTAiIHdpZHRoPSI2MCIgaGVpZHRoPSIyMCIgcng9IjEwIiBmaWxsPSIjNTk0MDA4Ij48L3JlY3Q+PGNpcmNsZSBjeD0iNTAiIGN5PSIzMCIgcj0iMTAiIGZpbGw9IiMzNzE5MEUiPjwvY2lyY2xlPjwvc3ZnPg==',
             },
         ],
         animalFlashcards: [],
@@ -328,6 +331,14 @@ const App: React.FC = () => {
                                 </button>
                             </div>
                         </header>
+
+                        {appData.settings.siteNotice && (
+                            <div className="mb-6 animate-fade-in">
+                                <CartoonBox color="yellow" title="تنويه!" icon={<LightbulbIcon className="w-6 h-6" />}>
+                                    {appData.settings.siteNotice}
+                                </CartoonBox>
+                            </div>
+                        )}
                         
                         <nav className="flex justify-center bg-black/20 p-1 rounded-t-2xl shadow-lg">
                            <TabButton tab="stories" icon={<BookIcon className="w-6 h-6"/>} label="القصص" />
@@ -340,6 +351,14 @@ const App: React.FC = () => {
                             {renderContent()}
                         </main>
                         
+                        {appData.settings.aboutSectionText && (
+                            <div className="mt-8 animate-fade-in">
+                                <CartoonBox color="blue" title={`حول ${appData.settings.siteTitle}`} icon={<PawIcon className="w-6 h-6" />}>
+                                    {appData.settings.aboutSectionText}
+                                </CartoonBox>
+                            </div>
+                        )}
+
                         <footer className="text-center mt-8 text-slate-400 text-sm">
                             <p>
                                 صنع بحب ❤️ بواسطة <a href={appData.settings.developerLink} target="_blank" rel="noopener noreferrer" className="text-yellow-400 hover:underline">{appData.settings.developerName || 'مطور التطبيق'}</a>

@@ -574,6 +574,34 @@ const handleDeletePuzzleImage = (pageId: string) => {
                     <input type="text" name="externalLink" value={localData.settings.externalLink} onChange={handleSettingsChange} className="w-full px-4 py-2 bg-white border-2 border-blue-200 rounded-full shadow-inner focus:ring-yellow-400 focus:border-yellow-400" />
                 </div>
                  <div>
+                    <label className="block text-sm font-bold text-gray-600 mb-1">تنويه الموقع</label>
+                    <textarea 
+                        name="siteNotice" 
+                        value={localData.settings.siteNotice || ''} 
+                        onChange={handleSettingsChange} 
+                        rows={3} 
+                        className="w-full px-4 py-2 bg-white border-2 border-blue-200 rounded-2xl shadow-inner focus:ring-yellow-400 focus:border-yellow-400" 
+                        placeholder="اكتب تنويهًا قصيرًا يظهر للأطفال في الصفحة الرئيسية..."
+                    />
+                    <p className="text-xs text-gray-500 mt-1">
+                        سيظهر هذا النص في إطار مميز في أعلى الصفحة الرئيسية. اتركه فارغًا لإخفائه.
+                    </p>
+                </div>
+                <div>
+                    <label className="block text-sm font-bold text-gray-600 mb-1">قسم "حول الموقع"</label>
+                    <textarea 
+                        name="aboutSectionText" 
+                        value={localData.settings.aboutSectionText || ''} 
+                        onChange={handleSettingsChange} 
+                        rows={5} 
+                        className="w-full px-4 py-2 bg-white border-2 border-blue-200 rounded-2xl shadow-inner focus:ring-yellow-400 focus:border-yellow-400"
+                        placeholder="اكتب نبذة عن الموقع للأطفال..."
+                    />
+                    <p className="text-xs text-gray-500 mt-1">
+                        سيظهر هذا النص في قسم خاص أسفل الصفحة الرئيسية. اتركه فارغًا لإخفائه.
+                    </p>
+                </div>
+                 <div>
                     <label className="block text-sm font-bold text-gray-600 mb-1">الشعار</label>
                     <div className='flex items-center space-x-4 space-x-reverse'>
                         {localData.settings.logoUrl && <img src={localData.settings.logoUrl} alt="logo" className="w-14 h-14 rounded-full object-cover border-4 border-white shadow-md" />}

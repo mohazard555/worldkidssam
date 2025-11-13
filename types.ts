@@ -82,6 +82,8 @@ export interface AppSettings {
   backgroundImageUrl?: string; // base64
   developerName: string;
   developerLink: string;
+  siteNotice?: string;
+  aboutSectionText?: string;
   coloringPages: ColoringPage[];
   quizzes: QuizQuestion[];
   drawings: Drawing[];
