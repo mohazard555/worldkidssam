@@ -33,7 +33,7 @@ const HabitatGame: React.FC<{ onBack: () => void }> = ({ onBack }) => {
   const [currentAnimal, setCurrentAnimal] = useState<Animal | null>(null);
   const [score, setScore] = useState(0);
   const [animalQueue, setAnimalQueue] = useState<Animal[]>([]);
-  const [feedback, setFeedback] = useState<Record<string, 'correct'|'incorrect'>>({});
+  const [feedback, setFeedback] = useState<Record<string, 'correct' | 'incorrect'>>({});
   const successAudioRef = useRef<HTMLAudioElement>(null);
   const failureAudioRef = useRef<HTMLAudioElement>(null);
 
@@ -47,16 +47,16 @@ const HabitatGame: React.FC<{ onBack: () => void }> = ({ onBack }) => {
 
   useEffect(setupGame, []);
 
-  const handleDrop = (habitat: Habitat) => {
-    if (!currentAnimal) return;
+  const handleHabitatClick = (habitat: Habitat) => {
+    if (!currentAnimal || Object.keys(feedback).length > 0) return;
 
     if (currentAnimal.habitat === habitat.id) {
         successAudioRef.current?.play();
         setScore(prev => prev + 1);
-        setFeedback(prev => ({...prev, [habitat.id]: 'correct'}));
+        setFeedback({ [habitat.id]: 'correct' });
     } else {
         failureAudioRef.current?.play();
-        setFeedback(prev => ({...prev, [habitat.id]: 'incorrect'}));
+        setFeedback({ [habitat.id]: 'incorrect', [currentAnimal.habitat]: 'correct' });
     }
     
     setTimeout(() => {
@@ -64,11 +64,7 @@ const HabitatGame: React.FC<{ onBack: () => void }> = ({ onBack }) => {
         setAnimalQueue(newQueue);
         setCurrentAnimal(newQueue[0] || null);
         setFeedback({});
-    }, 1000);
-  };
-
-  const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
+    }, 1500);
   };
   
   if (!currentAnimal) {
@@ -97,26 +93,27 @@ const HabitatGame: React.FC<{ onBack: () => void }> = ({ onBack }) => {
       <h3 className="text-2xl font-bold mb-4">أين يعيش هذا الحيوان؟</h3>
       
       <div className="mb-6 flex items-center justify-center h-28">
-        <div draggable className="text-8xl cursor-grab active:cursor-grabbing animate-bounce">
+        <div className="text-8xl animate-bounce">
             {currentAnimal.emoji}
         </div>
       </div>
       
       <div className="grid grid-cols-3 gap-2 max-w-lg mx-auto">
         {HABITATS.map((habitat) => (
-          <div
+          <button
             key={habitat.id}
-            onDrop={() => handleDrop(habitat)}
-            onDragOver={handleDragOver}
+            onClick={() => handleHabitatClick(habitat)}
+            disabled={Object.keys(feedback).length > 0}
             className={`aspect-square rounded-xl transition-all duration-300 shadow-lg flex flex-col items-center justify-center p-2 text-2xl font-bold
-            ${feedback[habitat.id] === 'correct' ? 'bg-green-500' : ''}
+            ${feedback[habitat.id] === 'correct' ? 'bg-green-500 ring-4 ring-white' : ''}
             ${feedback[habitat.id] === 'incorrect' ? 'bg-red-500' : ''}
-            ${!feedback[habitat.id] ? 'bg-blue-500' : ''}
+            ${!feedback[habitat.id] ? 'bg-blue-500 hover:bg-blue-600' : ''}
+            ${Object.keys(feedback).length > 0 && !feedback[habitat.id] ? 'opacity-50' : ''}
             `}
           >
             <div className="text-6xl">{habitat.emoji}</div>
             <span className="mt-2">{habitat.name}</span>
-          </div>
+          </button>
         ))}
       </div>
        <audio ref={successAudioRef} src="https://actions.google.com/sounds/v1/positive/success.ogg" preload="auto" />

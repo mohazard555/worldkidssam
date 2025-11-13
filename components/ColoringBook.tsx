@@ -1,17 +1,23 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { AppContext } from '../App';
-import { ChevronLeftIcon, ChevronRightIcon } from './Icons';
+import { ChevronLeftIcon, ChevronRightIcon, PaletteIcon } from './Icons';
+import ColoringCanvas from './ColoringCanvas';
+import { ColoringPage } from '../types';
+
 
 const ColoringBook: React.FC = () => {
     const { appData } = useContext(AppContext)!;
     const [currentIndex, setCurrentIndex] = useState(0);
-    
+    const [selectedImage, setSelectedImage] = useState<ColoringPage | null>(null);
+
     const images = appData.settings.coloringPages || [];
 
     // Reset index if images change to prevent out-of-bounds errors
     useEffect(() => {
-        setCurrentIndex(0);
-    }, [images.length]);
+        if (!selectedImage) {
+            setCurrentIndex(0);
+        }
+    }, [images.length, selectedImage]);
     
     const goToPrevious = () => {
         const isFirstSlide = currentIndex === 0;
@@ -25,6 +31,10 @@ const ColoringBook: React.FC = () => {
         setCurrentIndex(newIndex);
     };
 
+    if (selectedImage) {
+        return <ColoringCanvas image={selectedImage} onBack={() => setSelectedImage(null)} />;
+    }
+
     if (images.length === 0) {
         return (
              <div className="text-center text-white/80 p-8 bg-slate-800/50 rounded-xl">
@@ -36,12 +46,20 @@ const ColoringBook: React.FC = () => {
 
     return (
         <div id="coloring-book-content" className="animate-fade-in">
-            <div className="relative w-full aspect-[4/3] bg-slate-800 rounded-xl shadow-lg overflow-hidden">
+            <div className="relative w-full aspect-[4/3] bg-slate-800 rounded-xl shadow-lg overflow-hidden group">
                 <img 
                     src={images[currentIndex].imageUrl} 
-                    alt={`صورة ${currentIndex + 1}`} 
-                    className="w-full h-full object-contain"
+                    alt={`صورة تلوين ${currentIndex + 1}`} 
+                    className="w-full h-full object-contain cursor-pointer"
+                    onClick={() => setSelectedImage(images[currentIndex])}
                 />
+
+                <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center pointer-events-none">
+                    <div className="text-center text-white">
+                        <PaletteIcon className="w-16 h-16 mx-auto" />
+                        <p className="font-bold text-xl mt-2">اضغط للتلوين!</p>
+                    </div>
+                </div>
 
                 <button
                     onClick={goToPrevious}

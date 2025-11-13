@@ -2,6 +2,7 @@
 
 export interface StoryPage {
   imageUrl: string; // base64
+  text?: string;
   audioUrl?: string; // base64 data URL
 }
 

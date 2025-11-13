@@ -13,7 +13,6 @@ const StoryViewer: React.FC<StoryViewerProps> = ({ story, onClose }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isMuted, setIsMuted] = useState(false);
   const turnAudioRef = useRef<HTMLAudioElement>(null);
-  const musicAudioRef = useRef<HTMLAudioElement>(null);
   const narrationAudioRef = useRef<HTMLAudioElement>(null);
 
   useEffect(() => {
@@ -24,30 +23,7 @@ const StoryViewer: React.FC<StoryViewerProps> = ({ story, onClose }) => {
     });
   }, [story.pages]);
 
-  // Handle music playback
   useEffect(() => {
-    const audioEl = musicAudioRef.current;
-    if (audioEl && appData.settings.backgroundMusicUrl) {
-      audioEl.volume = 0.3;
-      const playPromise = audioEl.play();
-      if (playPromise !== undefined) {
-        playPromise.catch(error => {
-          console.error("Audio autoplay was prevented:", error);
-          setIsMuted(true);
-        });
-      }
-    }
-    
-    return () => {
-      audioEl?.pause();
-    };
-  }, [appData.settings.backgroundMusicUrl]);
-
-  // Sync the muted state of all audio elements with the isMuted state
-  useEffect(() => {
-      if(musicAudioRef.current) {
-          musicAudioRef.current.muted = isMuted;
-      }
       if(narrationAudioRef.current) {
           narrationAudioRef.current.muted = isMuted;
       }
@@ -107,6 +83,13 @@ const StoryViewer: React.FC<StoryViewerProps> = ({ story, onClose }) => {
                 alt={`${story.title} - صفحة ${currentIndex + 1}`} 
                 className="w-full h-full object-contain rounded-lg"
             />
+             {story.pages[currentIndex].text && (
+              <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-4 pt-20 text-center pointer-events-none">
+                <p className="text-white font-bold text-xl leading-relaxed animate-fade-in" style={{ textShadow: '2px 2px 4px rgba(0,0,0,0.8)' }}>
+                    {story.pages[currentIndex].text}
+                </p>
+              </div>
+            )}
         </div>
 
         <button
@@ -127,20 +110,17 @@ const StoryViewer: React.FC<StoryViewerProps> = ({ story, onClose }) => {
             {story.pages.length} / {currentIndex + 1}
         </div>
         
-        {(appData.settings.backgroundMusicUrl || story.pages.some(p => p.audioUrl)) && (
-            <>
-                <button
-                    onClick={() => setIsMuted(!isMuted)}
-                    className="absolute bottom-2 left-2 text-white bg-green-500 rounded-full p-3 hover:bg-green-600 transition-all z-10 shadow-md"
-                    aria-label={isMuted ? "تشغيل الصوت" : "كتم الصوت"}
-                >
-                    {isMuted ? <SpeakerOffIcon className="w-7 h-7" /> : <SpeakerOnIcon className="w-7 h-7" />}
-                </button>
-            </>
+        {story.pages.some(p => p.audioUrl) && (
+            <button
+                onClick={() => setIsMuted(!isMuted)}
+                className="absolute bottom-2 left-2 text-white bg-green-500 rounded-full p-3 hover:bg-green-600 transition-all z-10 shadow-md"
+                aria-label={isMuted ? "تشغيل صوت السرد" : "كتم صوت السرد"}
+            >
+                {isMuted ? <SpeakerOffIcon className="w-7 h-7" /> : <SpeakerOnIcon className="w-7 h-7" />}
+            </button>
         )}
       </div>
       <audio ref={turnAudioRef} src="https://actions.google.com/sounds/v1/ui/page_turn.ogg" preload="auto" />
-      {appData.settings.backgroundMusicUrl && <audio ref={musicAudioRef} src={appData.settings.backgroundMusicUrl} loop />}
       <audio ref={narrationAudioRef} preload="auto" />
     </div>
   );
