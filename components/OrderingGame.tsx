@@ -1,14 +1,14 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { ArrowLeftIcon, CheckIcon } from './Icons';
+import { ArrowRightIcon, CheckIcon } from './Icons';
 
 interface OrderItem {
   id: number;
-  content: string; // SVG content
+  content: string; // Emoji
 }
 
 const LEVEL_DATA: OrderItem[] = [
-  { id: 1, content: '🌱' }, // Sprout
-  { id: 2, content: '🌿' }, // Small plant
+  { id: 1, content: '🌱' }, // Seed
+  { id: 2, content: '🌿' }, // Sprout
   { id: 3, content: '🌳' }, // Tree
   { id: 4, content: '🍎' }, // Tree with fruit
 ];
@@ -23,6 +23,8 @@ const OrderingGame: React.FC<{ onBack: () => void }> = ({ onBack }) => {
   const [feedback, setFeedback] = useState<( 'correct' | 'incorrect' | null)[]>([]);
   const [isComplete, setIsComplete] = useState(false);
   const draggedItem = useRef<OrderItem | null>(null);
+  const successAudioRef = useRef<HTMLAudioElement>(null);
+  const failureAudioRef = useRef<HTMLAudioElement>(null);
 
   const setupGame = () => {
     setItems(shuffleArray([...LEVEL_DATA]));
@@ -54,6 +56,7 @@ const OrderingGame: React.FC<{ onBack: () => void }> = ({ onBack }) => {
   };
   
   const handleSlotClick = (index: number) => {
+      if (isComplete) return;
       const itemToReturn = slots[index];
       if(itemToReturn){
         setSlots(prev => {
@@ -61,12 +64,16 @@ const OrderingGame: React.FC<{ onBack: () => void }> = ({ onBack }) => {
            newSlots[index] = null;
            return newSlots;
         });
-        setItems(prev => [...prev, itemToReturn]);
+        setItems(prev => [...prev, itemToReturn].sort((a,b) => a.id - b.id)); // sort for consistent order
         setFeedback(new Array(LEVEL_DATA.length).fill(null));
       }
   };
 
   const checkOrder = () => {
+    if (slots.some(slot => slot === null)) {
+        alert("الرجاء ملء جميع المربعات أولاً!");
+        return;
+    }
     const newFeedback = slots.map((item, index) => {
       if (item && item.id === index + 1) {
         return 'correct';
@@ -76,19 +83,24 @@ const OrderingGame: React.FC<{ onBack: () => void }> = ({ onBack }) => {
       return null;
     });
     setFeedback(newFeedback);
-    if(newFeedback.every(f => f === 'correct')) {
+
+    const allCorrect = newFeedback.every(f => f === 'correct');
+    if (allCorrect) {
+        successAudioRef.current?.play();
         setIsComplete(true);
+    } else {
+        failureAudioRef.current?.play();
     }
   };
 
   return (
     <div className="bg-slate-800/50 p-4 rounded-lg text-center relative animate-fade-in">
        <button onClick={onBack} className="absolute top-3 left-3 text-white/70 hover:text-white bg-black/20 p-2 rounded-full transition-colors z-10">
-          <ArrowLeftIcon className="w-6 h-6" />
+          <ArrowRightIcon className="w-6 h-6" />
           <span className="sr-only">رجوع</span>
       </button>
-      <h3 className="text-2xl font-bold mb-2">رتب الصور بالتسلسل الصحيح</h3>
-      <p className="text-sm text-slate-300 mb-4">اسحب الصور من الأسفل إلى المربعات الفارغة</p>
+      <h3 className="text-2xl font-bold mb-2">رحلة البذرة</h3>
+      <p className="text-sm text-slate-300 mb-4">اسحب الصور من الأسفل إلى المربعات بالترتيب الصحيح</p>
       
       {/* Target Slots */}
       <div className="flex justify-center items-center gap-2 mb-4">
@@ -100,7 +112,7 @@ const OrderingGame: React.FC<{ onBack: () => void }> = ({ onBack }) => {
             onClick={() => handleSlotClick(index)}
             className={`w-20 h-20 sm:w-24 sm:h-24 rounded-lg flex items-center justify-center text-5xl transition-colors
             ${feedback[index] === 'correct' ? 'bg-green-500' : feedback[index] === 'incorrect' ? 'bg-red-500' : 'bg-slate-700'}
-            ${!item ? 'border-2 border-dashed border-slate-500' : ''}`}
+            ${!item ? 'border-2 border-dashed border-slate-500' : 'cursor-pointer'}`}
           >
             {item?.content}
           </div>
@@ -141,6 +153,9 @@ const OrderingGame: React.FC<{ onBack: () => void }> = ({ onBack }) => {
             </button>
         </div>
       )}
+
+      <audio ref={successAudioRef} src="https://actions.google.com/sounds/v1/positive/success.ogg" preload="auto" />
+      <audio ref={failureAudioRef} src="https://actions.google.com/sounds/v1/errors/error_swoosh.ogg" preload="auto" />
     </div>
   );
 };

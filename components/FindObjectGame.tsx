@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { ArrowLeftIcon } from './Icons';
+import { ArrowRightIcon } from './Icons';
 
 interface TargetObject {
   id: string;
@@ -10,11 +10,11 @@ interface TargetObject {
 }
 
 const LEVEL_DATA = {
-  image: `<svg viewBox="0 0 200 150"><rect width="200" height="150" fill="#f0e4d7" /><!-- Table --><rect x="30" y="100" width="140" height="10" rx="2" fill="#8B4513" /><rect x="40" y="110" width="10" height="30" fill="#8B4513" /><rect x="150" y="110" width="10" height="30" fill="#8B4513" /><!-- Objects on table --><rect x="120" y="80" width="20" height="20" fill="#22c55e" /><!-- Book --><circle cx="50" cy="90" r="10" fill="#ef4444" /><!-- Ball --><!-- Window --><rect x="70" y="20" width="60" height="40" fill="#87CEEB" /><line x1="100" y1="20" x2="100" y2="60" stroke="#fff" stroke-width="2"/><line x1="70" y1="40" x2="130" y2="40" stroke="#fff" stroke-width="2"/><!-- Cat --><path d="M160 120 C 155 110, 165 110, 170 120 L 180 140 H 150 Z" fill="#78350f" /><circle cx="162" cy="125" r="2" fill="black"/><circle cx="168" cy="125" r="2" fill="black"/><polygon points="160,120 155,115 160,118" fill="#78350f" /><polygon points="170,120 175,115 170,118" fill="#78350f" /></svg>`,
+  image: `<svg viewBox="0 0 200 150" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="150" fill="#c2d8e2"/><rect y="100" width="200" height="50" fill="#a4c6a4"/><rect x="120" y="50" width="60" height="80" rx="5" fill="#d8b48c"/><rect x="130" y="90" width="20" height="20" fill="#7a6c5d"/><rect x="125" y="60" width="25" height="20" fill="#f0e4d7"/><rect x="150" y="60" width="25" height="20" fill="#f0e4d7"/><polygon points="115,50 185,50 150,20" fill="#b48c6c"/><path d="M 20,100 C 10,80 30,70 40,80 L 60,100 Z" fill="#e55e5e"/><path d="M 15,100 C 5,80 25,70 35,80 L 55,100 Z" fill="#f4a460" transform="translate(10, 0)"/><circle cx="180" cy="130" r="10" fill="#fce57e"/><circle cx="50" cy="120" r="5" fill="#7a6c5d"/><circle cx="90" cy="110" r="15" fill="#5e8be5"/></svg>`,
   targets: [
-    { id: 'cat', name: 'القطة', x: 82.5, y: 86.6, radius: 10 },
-    { id: 'ball', name: 'الكرة الحمراء', x: 25, y: 60, radius: 8 },
-    { id: 'book', name: 'الكتاب الأخضر', x: 65, y: 59, radius: 8 },
+    { id: 'sun', name: 'الشمس', x: 90, y: 86.6, radius: 10 },
+    { id: 'ball', name: 'الكرة الزرقاء', x: 45, y: 73.3, radius: 10 },
+    { id: 'mushroom', name: 'الفطر الأحمر', x: 15, y: 60, radius: 8 },
   ] as TargetObject[],
 };
 
@@ -29,15 +29,17 @@ const FindObjectGame: React.FC<{ onBack: () => void }> = ({ onBack }) => {
 
   useEffect(() => {
     if (found.length === LEVEL_DATA.targets.length) {
-      setIsComplete(true);
+      setTimeout(() => setIsComplete(true), 500);
     } else {
       // Find next unfound target
       let nextIndex = 0;
       const targetIds = LEVEL_DATA.targets.map(t => t.id);
-      while (found.includes(targetIds[nextIndex])) {
+      while (found.includes(targetIds[nextIndex]) && nextIndex < targetIds.length) {
         nextIndex++;
       }
-      setCurrentTargetIndex(nextIndex);
+      if(nextIndex < targetIds.length) {
+        setCurrentTargetIndex(nextIndex);
+      }
     }
   }, [found]);
 
@@ -62,14 +64,15 @@ const FindObjectGame: React.FC<{ onBack: () => void }> = ({ onBack }) => {
   };
   
   const createSVGStringAsDataURI = (svgString: string) => {
-    return `data:image/svg+xml;base64,${btoa(svgString)}`;
+    const encoded = btoa(unescape(encodeURIComponent(svgString)));
+    return `data:image/svg+xml;base64,${encoded}`;
   };
 
 
   return (
     <div className="bg-slate-800/50 p-4 rounded-lg text-center relative animate-fade-in">
        <button onClick={onBack} className="absolute top-3 left-3 text-white/70 hover:text-white bg-black/20 p-2 rounded-full transition-colors z-20">
-          <ArrowLeftIcon className="w-6 h-6" />
+          <ArrowRightIcon className="w-6 h-6" />
           <span className="sr-only">رجوع</span>
       </button>
 

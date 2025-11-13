@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { SpeakerOnIcon, ArrowLeftIcon } from './Icons';
+import { SpeakerOnIcon, ArrowRightIcon } from './Icons';
 
 const ANIMALS = [
   { name: 'قطة', soundUrl: 'https://actions.google.com/sounds/v1/animals/cat_purr_close.ogg' },
@@ -21,6 +21,8 @@ const AnimalSoundsGame: React.FC<{ onBack: () => void }> = ({ onBack }) => {
   const [options, setOptions] = useState<typeof ANIMALS>([]);
   const [feedback, setFeedback] = useState<'correct' | 'incorrect' | null>(null);
   const audioRef = useRef<HTMLAudioElement>(null);
+  const successAudioRef = useRef<HTMLAudioElement>(null);
+  const failureAudioRef = useRef<HTMLAudioElement>(null);
 
   const generateNewRound = () => {
     setFeedback(null);
@@ -55,11 +57,13 @@ const AnimalSoundsGame: React.FC<{ onBack: () => void }> = ({ onBack }) => {
 
     if (animalName === targetAnimal.name) {
       setFeedback('correct');
+      successAudioRef.current?.play();
       setTimeout(() => {
         generateNewRound();
       }, 1500);
     } else {
       setFeedback('incorrect');
+      failureAudioRef.current?.play();
       setTimeout(() => {
         setFeedback(null);
       }, 1000);
@@ -67,18 +71,22 @@ const AnimalSoundsGame: React.FC<{ onBack: () => void }> = ({ onBack }) => {
   };
   
   const getButtonClass = (animalName: string): string => {
-      const selectedIncorrect = feedback === 'incorrect';
+      const isSelectedOption = feedback === 'incorrect' && animalName !== targetAnimal.name;
       const isCorrectAnswer = animalName === targetAnimal.name;
       
       if (!feedback) {
           return "bg-blue-500 hover:bg-blue-600";
       }
 
-      if (isCorrectAnswer) {
+      if (feedback === 'correct' && isCorrectAnswer) {
           return "bg-green-600 animate-pulse";
       }
       
-      if (selectedIncorrect) {
+      if (feedback === 'incorrect' && isCorrectAnswer) {
+          return "bg-green-600";
+      }
+
+      if (isSelectedOption) {
           return "bg-red-600";
       }
       
@@ -88,7 +96,7 @@ const AnimalSoundsGame: React.FC<{ onBack: () => void }> = ({ onBack }) => {
   return (
     <div className="bg-slate-800/50 p-4 rounded-lg text-center relative animate-fade-in">
       <button onClick={onBack} className="absolute top-3 left-3 text-white/70 hover:text-white bg-black/20 p-2 rounded-full transition-colors z-10">
-          <ArrowLeftIcon className="w-6 h-6" />
+          <ArrowRightIcon className="w-6 h-6" />
           <span className="sr-only">رجوع</span>
       </button>
       <h3 className="text-2xl font-bold mb-4">ما هو صاحب الصوت؟</h3>
@@ -114,6 +122,8 @@ const AnimalSoundsGame: React.FC<{ onBack: () => void }> = ({ onBack }) => {
         ))}
       </div>
       <audio ref={audioRef} preload="auto" />
+      <audio ref={successAudioRef} src="https://actions.google.com/sounds/v1/positive/success.ogg" preload="auto" />
+      <audio ref={failureAudioRef} src="https://actions.google.com/sounds/v1/errors/error_swoosh.ogg" preload="auto" />
     </div>
   );
 };

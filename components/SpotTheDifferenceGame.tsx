@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { ArrowLeftIcon } from './Icons';
+import { ArrowRightIcon } from './Icons';
 
 interface Difference {
   id: number;
@@ -9,13 +9,13 @@ interface Difference {
 }
 
 const LEVEL_DATA = {
-  image1: `<svg viewBox="0 0 100 100"><rect width="100" height="100" fill="#87CEEB" /><circle cx="80" cy="20" r="15" fill="#FFD700" /><path d="M0 80 Q 25 70, 50 80 T 100 80 V 100 H 0 Z" fill="#32CD32" /><rect x="45" y="60" width="10" height="20" fill="#8B4513" /><polygon points="40,60 60,60 50,40" fill="#228B22" /><circle cx="20" cy="85" r="5" fill="#FF69B4" /><circle cx="23" cy="88" r="3" fill="#FFC0CB" /></svg>`,
-  image2: `<svg viewBox="0 0 100 100"><rect width="100" height="100" fill="#87CEEB" /><circle cx="80" cy="20" r="12" fill="#FFD700" /><path d="M0 80 Q 25 70, 50 80 T 100 80 V 100 H 0 Z" fill="#32CD32" /><rect x="45" y="65" width="10" height="15" fill="#A0522D" /><polygon points="40,60 60,60 50,40" fill="#006400" /><circle cx="23" cy="88" r="3" fill="#FFC0CB" /></svg>`,
+  image1: `<svg viewBox="0 0 200 150" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="150" fill="#a0d3f5"/><circle cx="30" cy="30" r="20" fill="#fce57e"/><rect y="120" width="200" height="30" fill="#78c28a"/><path d="M 80 120 C 80 100, 90 100, 90 120 Z" fill="#9b7653"/><path d="M 70 80 C 60 90, 80 110, 100 80 C 120 110, 140 90, 130 80 C 120 70, 80 70, 70 80 Z" fill="#60a83f"/><circle cx="150" cy="130" r="8" fill="#e55e5e"/><circle cx="170" cy="135" r="5" fill="#f4a460"/><path d="M20,120 L30,100 L40,120 Z" fill="#f4a460" transform="rotate(15,30,110)"/><path d="M10,120 L20,100 L30,120 Z" fill="#60a83f" transform="rotate(-10,20,110)"/></svg>`,
+  image2: `<svg viewBox="0 0 200 150" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="150" fill="#a0d3f5"/><circle cx="30" cy="30" r="20" fill="#fce57e"/><path d="M35 25 Q 30 30 35 35" stroke="#e55e5e" stroke-width="2" fill="none" transform="rotate(45 30 30)"/><rect y="120" width="200" height="30" fill="#78c28a"/><path d="M 80 120 C 80 100, 90 100, 90 120 Z" fill="#9b7653"/><path d="M 70 80 C 60 90, 80 110, 100 80 C 120 110, 140 90, 130 80 C 120 70, 80 70, 70 80 Z" fill="#88c44e"/><circle cx="150" cy="130" r="8" fill="#5e8be5"/><circle cx="170" cy="135" r="5" fill="#f4a460"/><path d="M20,120 L30,100 L40,120 Z" fill="#f4a460" transform="rotate(15,30,110)"/></svg>`,
   differences: [
-    { id: 1, x: 80, y: 20, radius: 15 }, // Sun size
-    { id: 2, x: 50, y: 70, radius: 10 }, // Tree trunk
-    { id: 3, x: 50, y: 50, radius: 10 }, // Tree leaves color
-    { id: 4, x: 20, y: 85, radius: 5 },  // Missing flower
+    { id: 1, x: 15, y: 20, radius: 4 }, // Sunglasses on sun
+    { id: 2, x: 50, y: 56, radius: 10 }, // Tree color
+    { id: 3, x: 75, y: 86, radius: 5 },  // Ball color
+    { id: 4, x: 10, y: 73, radius: 5 },  // Missing plant
   ] as Difference[],
 };
 
@@ -28,7 +28,7 @@ const SpotTheDifferenceGame: React.FC<{ onBack: () => void }> = ({ onBack }) => 
 
   useEffect(() => {
     if (found.length === LEVEL_DATA.differences.length) {
-      setIsComplete(true);
+       setTimeout(() => setIsComplete(true), 500);
     }
   }, [found]);
 
@@ -57,26 +57,27 @@ const SpotTheDifferenceGame: React.FC<{ onBack: () => void }> = ({ onBack }) => 
   };
 
   const createSVGStringAsDataURI = (svgString: string) => {
-    return `data:image/svg+xml;base64,${btoa(svgString)}`;
+    const encoded = btoa(unescape(encodeURIComponent(svgString)));
+    return `data:image/svg+xml;base64,${encoded}`;
   };
 
   return (
     <div className="bg-slate-800/50 p-4 rounded-lg text-center relative animate-fade-in">
-      <button onClick={onBack} className="absolute top-3 right-3 text-white/70 hover:text-white bg-black/20 p-2 rounded-full transition-colors z-20">
-        <ArrowLeftIcon className="w-6 h-6 transform -scale-x-100" />
+      <button onClick={onBack} className="absolute top-3 left-3 text-white/70 hover:text-white bg-black/20 p-2 rounded-full transition-colors z-20">
+        <ArrowRightIcon className="w-6 h-6" />
         <span className="sr-only">رجوع</span>
       </button>
 
       <h3 className="text-2xl font-bold mb-2">أوجد الاختلافات</h3>
-      <p className="text-lg mb-4">
+      <p className="text-lg mb-4 font-bold text-yellow-300">
         {LEVEL_DATA.differences.length} / {found.length}
       </p>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-2 relative">
-        <div className="relative aspect-square">
+        <div className="relative aspect-[4/3]">
             <img src={createSVGStringAsDataURI(LEVEL_DATA.image1)} className="w-full h-full object-contain rounded-lg border-2 border-slate-600"/>
         </div>
-        <div ref={imageRef} onClick={handleImageClick} className="relative aspect-square cursor-pointer">
+        <div ref={imageRef} onClick={handleImageClick} className="relative aspect-[4/3] cursor-pointer">
             <img src={createSVGStringAsDataURI(LEVEL_DATA.image2)} className="w-full h-full object-contain rounded-lg border-2 border-slate-600"/>
             {LEVEL_DATA.differences.map(diff => {
                 const isFound = found.includes(diff.id);
@@ -84,7 +85,7 @@ const SpotTheDifferenceGame: React.FC<{ onBack: () => void }> = ({ onBack }) => 
                     return (
                         <div
                             key={diff.id}
-                            className="absolute border-4 border-red-500 rounded-full animate-pulse"
+                            className="absolute border-4 border-green-400 bg-green-400/30 rounded-full animate-pulse pointer-events-none"
                             style={{
                                 top: `${diff.y}%`,
                                 left: `${diff.x}%`,

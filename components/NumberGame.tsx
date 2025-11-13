@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react';
-import { CheckIcon, ArrowLeftIcon } from './Icons';
+import React, { useState, useEffect, useRef } from 'react';
+import { CheckIcon, ArrowRightIcon } from './Icons';
 
 interface NumberProblem {
-  target: number;
-  items: { emoji: string; count: number }[];
+  emoji: string;
+  count: number;
+  options: number[];
 }
 
 const EMOJIS = ['🍎', '⚽️', '🐱', '☀️', '🚗', '🏠', '⭐️', '🎈', '🍕', '🍓'];
@@ -13,52 +14,56 @@ const shuffleArray = <T,>(array: T[]): T[] => {
 };
 
 const generateProblem = (): NumberProblem => {
-    const targetNumber = Math.floor(Math.random() * 9) + 1; // 1-9
-    let options: { emoji: string; count: number }[] = [];
+    const targetCount = Math.floor(Math.random() * 9) + 2; // 2-10
+    const targetEmoji = EMOJIS[Math.floor(Math.random() * EMOJIS.length)];
     
-    // Create the correct option
-    const correctEmoji = EMOJIS[Math.floor(Math.random() * EMOJIS.length)];
-    options.push({ emoji: correctEmoji, count: targetNumber });
-
-    // Create 3 incorrect options
-    const availableEmojis = EMOJIS.filter(e => e !== correctEmoji);
-    const shuffledEmojis = shuffleArray(availableEmojis);
-
-    for (let i = 0; i < 3; i++) {
+    let options: number[] = [targetCount];
+    while (options.length < 4) {
         let wrongNumber;
         do {
-            wrongNumber = Math.floor(Math.random() * 9) + 1;
-        } while (wrongNumber === targetNumber || options.some(o => o.count === wrongNumber));
-        options.push({ emoji: shuffledEmojis[i], count: wrongNumber });
+            wrongNumber = Math.floor(Math.random() * 9) + 2;
+        } while (options.includes(wrongNumber));
+        options.push(wrongNumber);
     }
     
     return {
-        target: targetNumber,
-        items: shuffleArray(options)
+        emoji: targetEmoji,
+        count: targetCount,
+        options: shuffleArray(options)
     };
 };
 
 const NumberGame: React.FC<{ onBack: () => void }> = ({ onBack }) => {
   const [problem, setProblem] = useState<NumberProblem>(generateProblem());
   const [feedback, setFeedback] = useState<'correct' | 'incorrect' | null>(null);
+  const [selectedOption, setSelectedOption] = useState<number | null>(null);
+
+  const successAudioRef = useRef<HTMLAudioElement>(null);
+  const failureAudioRef = useRef<HTMLAudioElement>(null);
 
   const generateNewRound = () => {
     setFeedback(null);
+    setSelectedOption(null);
     setProblem(generateProblem());
   };
 
-  const handleOptionClick = (count: number) => {
+  const handleOptionClick = (option: number) => {
     if (feedback) return;
+    
+    setSelectedOption(option);
 
-    if (count === problem.target) {
+    if (option === problem.count) {
       setFeedback('correct');
+      successAudioRef.current?.play();
       setTimeout(() => {
         generateNewRound();
-      }, 1000);
+      }, 1200);
     } else {
       setFeedback('incorrect');
+      failureAudioRef.current?.play();
       setTimeout(() => {
         setFeedback(null);
+        setSelectedOption(null);
       }, 1000);
     }
   };
@@ -66,43 +71,46 @@ const NumberGame: React.FC<{ onBack: () => void }> = ({ onBack }) => {
   return (
     <div className="bg-slate-800/50 p-4 rounded-lg text-center relative animate-fade-in">
       <button onClick={onBack} className="absolute top-3 left-3 text-white/70 hover:text-white bg-black/20 p-2 rounded-full transition-colors z-10">
-          <ArrowLeftIcon className="w-6 h-6" />
+          <ArrowRightIcon className="w-6 h-6" />
           <span className="sr-only">رجوع</span>
       </button>
-      <h3 className="text-2xl font-bold mb-4">اختر المجموعة الصحيحة</h3>
-      <div className="mb-6 h-16 flex items-center justify-center">
-        <p className="text-6xl font-black text-yellow-300" style={{ textShadow: '2px 2px 4px rgba(0,0,0,0.5)' }}>
-          {problem.target}
-        </p>
-      </div>
-      <div className="grid grid-cols-2 gap-4 max-w-sm mx-auto">
-        {problem.items.map((option, index) => (
-          <button
-            key={index}
-            onClick={() => handleOptionClick(option.count)}
-            className={`relative aspect-square rounded-xl transition-all duration-300 transform hover:scale-105 shadow-lg flex items-center justify-center p-2
-            ${feedback && option.count !== problem.target ? 'bg-slate-700 opacity-60' : 'bg-blue-500'}
-            `}
-            aria-label={`${option.count} ${option.emoji}`}
-            disabled={!!feedback}
-          >
-            <div className="text-4xl leading-none grid grid-cols-3 gap-1">
-                {Array.from({ length: option.count }).map((_, i) => (
-                    <span key={i}>{option.emoji}</span>
-                ))}
-            </div>
+      <h3 className="text-2xl font-bold mb-4">كم عدد الأشياء في الصورة؟</h3>
 
-            {feedback === 'correct' && option.count === problem.target && (
-              <div className="absolute inset-0 bg-green-500/80 flex items-center justify-center rounded-xl animate-pulse">
-                <CheckIcon className="w-16 h-16 text-white" />
-              </div>
-            )}
-            {feedback === 'incorrect' && option.count !== problem.target && (
-                 <div className="absolute inset-0 bg-black/50 rounded-xl"></div>
-            )}
-          </button>
-        ))}
+      <div className="mb-6 min-h-[120px] flex items-center justify-center p-4 bg-slate-700/50 rounded-lg">
+        <div className="text-4xl leading-none grid grid-cols-5 gap-2">
+            {Array.from({ length: problem.count }).map((_, i) => (
+                <span key={i} className="animate-fade-in" style={{animationDelay: `${i*50}ms`}}>{problem.emoji}</span>
+            ))}
+        </div>
       </div>
+      
+      <div className="grid grid-cols-2 gap-4 max-w-sm mx-auto">
+        {problem.options.map((option, index) => {
+            const isCorrect = option === problem.count;
+            const isSelected = selectedOption === option;
+
+            let buttonClass = 'bg-blue-500 hover:bg-blue-600';
+
+            if (feedback && isSelected) {
+                buttonClass = isCorrect ? 'bg-green-500 animate-pulse' : 'bg-red-500';
+            } else if (feedback && !isSelected) {
+                buttonClass = isCorrect ? 'bg-green-500' : 'bg-blue-500 opacity-50';
+            }
+
+            return (
+              <button
+                key={index}
+                onClick={() => handleOptionClick(option)}
+                className={`aspect-square rounded-xl transition-all duration-300 transform shadow-lg flex items-center justify-center p-2 text-5xl font-bold ${buttonClass}`}
+                disabled={!!feedback}
+              >
+               {option}
+              </button>
+            )
+        })}
+      </div>
+      <audio ref={successAudioRef} src="https://actions.google.com/sounds/v1/positive/success.ogg" preload="auto" />
+      <audio ref={failureAudioRef} src="https://actions.google.com/sounds/v1/errors/error_swoosh.ogg" preload="auto" />
     </div>
   );
 };

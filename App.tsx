@@ -245,7 +245,7 @@ const App: React.FC = () => {
                          <div className="animate-fade-in">
                              <SectionCard
                                 title="ألعاب تعليمية"
-                                count={8}
+                                count={16}
                                 icon={<PawIcon className="w-8 h-8" />}
                                 colorClasses="from-teal-500 to-cyan-600"
                                 defaultOpen={true}

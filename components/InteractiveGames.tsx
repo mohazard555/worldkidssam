@@ -7,105 +7,87 @@ import ShapeGame from './ShapeGame';
 import SpotTheDifferenceGame from './SpotTheDifferenceGame';
 import OrderingGame from './OrderingGame';
 import FindObjectGame from './FindObjectGame';
-import { PaletteIcon, PawIcon, AbcIcon, NumberIcon, ShapesIcon, SpotTheDifferenceIcon, OrderingGameIcon, FindObjectIcon } from './Icons';
+import FirstLetterGame from './FirstLetterGame';
+import WordFormationGame from './WordFormationGame';
+import AdditionGame from './AdditionGame';
+import ComparisonGame from './ComparisonGame';
+import HabitatGame from './HabitatGame';
+import WeatherGame from './WeatherGame';
+import BehaviorGame from './BehaviorGame';
+import FeelingsGame from './FeelingsGame';
 
-type Game = 'colors' | 'animals' | 'matching' | 'numbers' | 'shapes' | 'spot-the-difference' | 'ordering' | 'find-object' | null;
+import { 
+    PaletteIcon, PawIcon, AbcIcon, NumberIcon, ShapesIcon, SpotTheDifferenceIcon, OrderingGameIcon, FindObjectIcon, FirstLetterIcon, WordFormationIcon, AdditionIcon, ComparisonIcon, HabitatIcon, WeatherIcon, BehaviorIcon, FeelingsIcon
+} from './Icons';
+
+type Game = 'colors' | 'animals' | 'matching' | 'numbers' | 'shapes' | 'spot-the-difference' | 'ordering' | 'find-object' | 'first-letter' | 'word-formation' | 'addition' | 'comparison' | 'habitat' | 'weather' | 'behavior' | 'feelings' | null;
+
+interface GameCardProps {
+    onClick: () => void;
+    title: string;
+    description: string;
+    icon: React.ReactNode;
+    color: string;
+}
+
+const GameCard: React.FC<GameCardProps> = ({ onClick, title, description, icon, color }) => (
+    <button
+        onClick={onClick}
+        className={`group relative aspect-[4/3] rounded-2xl p-4 text-white text-center flex flex-col items-center justify-center transform transition-all hover:scale-105 shadow-lg hover:shadow-2xl ${color}`}
+    >
+        <div className="mb-2 transition-transform group-hover:rotate-12 duration-300">{icon}</div>
+        <h3 className="text-2xl font-black">{title}</h3>
+        <p className="mt-1 text-sm font-semibold">{description}</p>
+    </button>
+);
+
 
 const InteractiveGames: React.FC = () => {
     const [activeGame, setActiveGame] = useState<Game>(null);
 
-    if (activeGame === 'colors') {
-        return <ColorGame onBack={() => setActiveGame(null)} />;
+    const gameComponents: Record<Game, React.ReactNode> = {
+        'colors': <ColorGame onBack={() => setActiveGame(null)} />,
+        'animals': <AnimalSoundsGame onBack={() => setActiveGame(null)} />,
+        'matching': <MatchingGame onBack={() => setActiveGame(null)} />,
+        'numbers': <NumberGame onBack={() => setActiveGame(null)} />,
+        'shapes': <ShapeGame onBack={() => setActiveGame(null)} />,
+        'spot-the-difference': <SpotTheDifferenceGame onBack={() => setActiveGame(null)} />,
+        'ordering': <OrderingGame onBack={() => setActiveGame(null)} />,
+        'find-object': <FindObjectGame onBack={() => setActiveGame(null)} />,
+        'first-letter': <FirstLetterGame onBack={() => setActiveGame(null)} />,
+        'word-formation': <WordFormationGame onBack={() => setActiveGame(null)} />,
+        // FIX: The key 'count-things' is not a valid property in the 'Game' type. This line has been removed.
+        'addition': <AdditionGame onBack={() => setActiveGame(null)} />,
+        'comparison': <ComparisonGame onBack={() => setActiveGame(null)} />,
+        'habitat': <HabitatGame onBack={() => setActiveGame(null)} />,
+        'weather': <WeatherGame onBack={() => setActiveGame(null)} />,
+        'behavior': <BehaviorGame onBack={() => setActiveGame(null)} />,
+        'feelings': <FeelingsGame onBack={() => setActiveGame(null)} />,
+        null: null,
+    };
+    
+    if (activeGame && gameComponents[activeGame]) {
+        return <>{gameComponents[activeGame]}</>;
     }
-    if (activeGame === 'animals') {
-        return <AnimalSoundsGame onBack={() => setActiveGame(null)} />;
-    }
-    if (activeGame === 'matching') {
-        return <MatchingGame onBack={() => setActiveGame(null)} />;
-    }
-    if (activeGame === 'numbers') {
-        return <NumberGame onBack={() => setActiveGame(null)} />;
-    }
-    if (activeGame === 'shapes') {
-        return <ShapeGame onBack={() => setActiveGame(null)} />;
-    }
-    if (activeGame === 'spot-the-difference') {
-        return <SpotTheDifferenceGame onBack={() => setActiveGame(null)} />;
-    }
-    if (activeGame === 'ordering') {
-        return <OrderingGame onBack={() => setActiveGame(null)} />;
-    }
-    if (activeGame === 'find-object') {
-        return <FindObjectGame onBack={() => setActiveGame(null)} />;
-    }
-
 
     return (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 animate-fade-in">
-            <button 
-                onClick={() => setActiveGame('colors')}
-                className="group relative aspect-video bg-gradient-to-br from-pink-500 to-purple-600 rounded-2xl p-6 text-white text-center flex flex-col items-center justify-center transform transition-all hover:scale-105 shadow-lg hover:shadow-2xl"
-            >
-                <PaletteIcon className="w-16 h-16 mb-4 transition-transform group-hover:rotate-12" />
-                <h3 className="text-3xl font-black">لعبة الألوان</h3>
-                <p className="mt-2 font-semibold">تعلم أسماء الألوان</p>
-            </button>
-            <button 
-                onClick={() => setActiveGame('animals')}
-                className="group relative aspect-video bg-gradient-to-br from-green-500 to-teal-600 rounded-2xl p-6 text-white text-center flex flex-col items-center justify-center transform transition-all hover:scale-105 shadow-lg hover:shadow-2xl"
-            >
-                <PawIcon className="w-16 h-16 mb-4 transition-transform group-hover:rotate-12" />
-                <h3 className="text-3xl font-black">أصوات الحيوانات</h3>
-                <p className="mt-2 font-semibold">خمن صوت الحيوان</p>
-            </button>
-            <button 
-                onClick={() => setActiveGame('matching')}
-                className="group relative aspect-video bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl p-6 text-white text-center flex flex-col items-center justify-center transform transition-all hover:scale-105 shadow-lg hover:shadow-2xl"
-            >
-                <AbcIcon className="w-16 h-16 mb-4 transition-transform group-hover:rotate-12" />
-                <h3 className="text-3xl font-black">لعبة المطابقة</h3>
-                <p className="mt-2 font-semibold">طابق الصورة بالكلمة</p>
-            </button>
-             <button 
-                onClick={() => setActiveGame('numbers')}
-                className="group relative aspect-video bg-gradient-to-br from-orange-500 to-yellow-500 rounded-2xl p-6 text-white text-center flex flex-col items-center justify-center transform transition-all hover:scale-105 shadow-lg hover:shadow-2xl"
-            >
-                <NumberIcon className="w-16 h-16 mb-4 transition-transform group-hover:rotate-12" />
-                <h3 className="text-3xl font-black">لعبة الأرقام</h3>
-                <p className="mt-2 font-semibold">تعلم العد وحساب الأشياء</p>
-            </button>
-            <button 
-                onClick={() => setActiveGame('shapes')}
-                className="group relative aspect-video bg-gradient-to-br from-rose-500 to-red-600 rounded-2xl p-6 text-white text-center flex flex-col items-center justify-center transform transition-all hover:scale-105 shadow-lg hover:shadow-2xl"
-            >
-                <ShapesIcon className="w-16 h-16 mb-4 transition-transform group-hover:rotate-12" />
-                <h3 className="text-3xl font-black">لعبة الأشكال</h3>
-                <p className="mt-2 font-semibold">تعرف على الأشكال الهندسية</p>
-            </button>
-             <button 
-                onClick={() => setActiveGame('spot-the-difference')}
-                className="group relative aspect-video bg-gradient-to-br from-cyan-500 to-blue-500 rounded-2xl p-6 text-white text-center flex flex-col items-center justify-center transform transition-all hover:scale-105 shadow-lg hover:shadow-2xl"
-            >
-                <SpotTheDifferenceIcon className="w-16 h-16 mb-4 transition-transform group-hover:rotate-12" />
-                <h3 className="text-3xl font-black">اختلافات الصور</h3>
-                <p className="mt-2 font-semibold">ابحث عن الفروقات</p>
-            </button>
-            <button 
-                onClick={() => setActiveGame('ordering')}
-                className="group relative aspect-video bg-gradient-to-br from-lime-500 to-green-500 rounded-2xl p-6 text-white text-center flex flex-col items-center justify-center transform transition-all hover:scale-105 shadow-lg hover:shadow-2xl"
-            >
-                <OrderingGameIcon className="w-16 h-16 mb-4 transition-transform group-hover:rotate-12" />
-                <h3 className="text-3xl font-black">رتب الأشياء</h3>
-                <p className="mt-2 font-semibold">ضع الصور في ترتيبها الصحيح</p>
-            </button>
-            <button 
-                onClick={() => setActiveGame('find-object')}
-                className="group relative aspect-video bg-gradient-to-br from-amber-500 to-orange-600 rounded-2xl p-6 text-white text-center flex flex-col items-center justify-center transform transition-all hover:scale-105 shadow-lg hover:shadow-2xl"
-            >
-                <FindObjectIcon className="w-16 h-16 mb-4 transition-transform group-hover:rotate-12" />
-                <h3 className="text-3xl font-black">ابحث عن الشيء</h3>
-                <p className="mt-2 font-semibold">ابحث عن العناصر المخبأة</p>
-            </button>
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 animate-fade-in">
+            <GameCard onClick={() => setActiveGame('first-letter')} title="أول حرف" description="اختر الحرف الأول للكلمة" icon={<FirstLetterIcon className="w-12 h-12" />} color="bg-gradient-to-br from-red-500 to-orange-500" />
+            <GameCard onClick={() => setActiveGame('word-formation')} title="كوّن الكلمة" description="رتب الحروف لتكوين كلمة" icon={<WordFormationIcon className="w-12 h-12" />} color="bg-gradient-to-br from-yellow-500 to-lime-500" />
+            <GameCard onClick={() => setActiveGame('numbers')} title="عد الأشياء" description="تعلم العد والأرقام" icon={<NumberIcon className="w-12 h-12" />} color="bg-gradient-to-br from-green-500 to-teal-500" />
+            <GameCard onClick={() => setActiveGame('addition')} title="الجمع والمرح" description="حل مسائل الجمع البسيطة" icon={<AdditionIcon className="w-12 h-12" />} color="bg-gradient-to-br from-cyan-500 to-blue-500" />
+            <GameCard onClick={() => setActiveGame('comparison')} title="من الأكبر؟" description="قارن بين الكميات المختلفة" icon={<ComparisonIcon className="w-12 h-12" />} color="bg-gradient-to-br from-indigo-500 to-purple-500" />
+            <GameCard onClick={() => setActiveGame('habitat')} title="أين يعيش؟" description="طابق الحيوان ببيئته" icon={<HabitatIcon className="w-12 h-12" />} color="bg-gradient-to-br from-pink-500 to-rose-500" />
+            <GameCard onClick={() => setActiveGame('weather')} title="الطقس اليوم" description="اختر الملابس المناسبة للطقس" icon={<WeatherIcon className="w-12 h-12" />} color="bg-gradient-to-br from-sky-400 to-blue-600" />
+            <GameCard onClick={() => setActiveGame('ordering')} title="رحلة البذرة" description="رتب مراحل نمو النبات" icon={<OrderingGameIcon className="w-12 h-12" />} color="bg-gradient-to-br from-lime-500 to-green-500" />
+            <GameCard onClick={() => setActiveGame('behavior')} title="تصرف صح!" description="تعلم القيم والسلوك الإيجابي" icon={<BehaviorIcon className="w-12 h-12" />} color="bg-gradient-to-br from-amber-400 to-orange-500" />
+            <GameCard onClick={() => setActiveGame('feelings')} title="تعرف على المشاعر" description="تنمية الذكاء العاطفي" icon={<FeelingsIcon className="w-12 h-12" />} color="bg-gradient-to-br from-violet-500 to-fuchsia-500" />
+            <GameCard onClick={() => setActiveGame('colors')} title="لعبة الألوان" description="تعلم أسماء الألوان" icon={<PaletteIcon className="w-12 h-12" />} color="bg-gradient-to-br from-pink-500 to-purple-600" />
+            <GameCard onClick={() => setActiveGame('animals')} title="أصوات الحيوانات" description="خمن صوت الحيوان" icon={<PawIcon className="w-12 h-12" />} color="bg-gradient-to-br from-green-500 to-teal-600" />
+            <GameCard onClick={() => setActiveGame('matching')} title="لعبة المطابقة" description="طابق الصورة بالكلمة" icon={<AbcIcon className="w-12 h-12" />} color="bg-gradient-to-br from-blue-500 to-indigo-600" />
+            <GameCard onClick={() => setActiveGame('shapes')} title="لعبة الأشكال" description="تعرف على الأشكال الهندسية" icon={<ShapesIcon className="w-12 h-12" />} color="bg-gradient-to-br from-rose-500 to-red-600" />
+            <GameCard onClick={() => setActiveGame('spot-the-difference')} title="اختلافات الصور" description="ابحث عن الفروقات" icon={<SpotTheDifferenceIcon className="w-12 h-12" />} color="bg-gradient-to-br from-cyan-500 to-blue-500" />
+            <GameCard onClick={() => setActiveGame('find-object')} title="ابحث عن الشيء" description="ابحث عن العناصر المخبأة" icon={<FindObjectIcon className="w-12 h-12" />} color="bg-gradient-to-br from-amber-500 to-orange-600" />
         </div>
     );
 };

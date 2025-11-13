@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { ArrowLeftIcon } from './Icons';
+import { ArrowRightIcon } from './Icons';
 
 interface MatchItem {
   id: string;
@@ -87,7 +87,7 @@ const MatchingGame: React.FC<{ onBack: () => void }> = ({ onBack }) => {
   return (
     <div className="bg-slate-800/50 p-4 rounded-lg text-center relative animate-fade-in">
         <button onClick={onBack} className="absolute top-3 left-3 text-white/70 hover:text-white bg-black/20 p-2 rounded-full transition-colors z-10">
-            <ArrowLeftIcon className="w-6 h-6" />
+            <ArrowRightIcon className="w-6 h-6" />
             <span className="sr-only">رجوع</span>
         </button>
         <h3 className="text-2xl font-bold mb-4">طابق الصورة بالكلمة</h3>

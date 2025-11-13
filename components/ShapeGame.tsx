@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { CheckIcon, ArrowLeftIcon } from './Icons';
+import React, { useState, useEffect, useRef } from 'react';
+import { CheckIcon, ArrowRightIcon } from './Icons';
 
 interface Shape {
     name: string;
@@ -28,6 +28,8 @@ const ShapeGame: React.FC<{ onBack: () => void }> = ({ onBack }) => {
   const [targetShape, setTargetShape] = useState(SHAPES[0]);
   const [options, setOptions] = useState<Shape[]>([]);
   const [feedback, setFeedback] = useState<'correct' | 'incorrect' | null>(null);
+  const successAudioRef = useRef<HTMLAudioElement>(null);
+  const failureAudioRef = useRef<HTMLAudioElement>(null);
 
   const generateNewRound = () => {
     setFeedback(null);
@@ -46,11 +48,13 @@ const ShapeGame: React.FC<{ onBack: () => void }> = ({ onBack }) => {
 
     if (shapeName === targetShape.name) {
       setFeedback('correct');
+      successAudioRef.current?.play();
       setTimeout(() => {
         generateNewRound();
       }, 1000);
     } else {
       setFeedback('incorrect');
+      failureAudioRef.current?.play();
       setTimeout(() => {
         setFeedback(null);
       }, 1000);
@@ -60,7 +64,7 @@ const ShapeGame: React.FC<{ onBack: () => void }> = ({ onBack }) => {
   return (
     <div className="bg-slate-800/50 p-4 rounded-lg text-center relative animate-fade-in">
       <button onClick={onBack} className="absolute top-3 left-3 text-white/70 hover:text-white bg-black/20 p-2 rounded-full transition-colors z-10">
-          <ArrowLeftIcon className="w-6 h-6" />
+          <ArrowRightIcon className="w-6 h-6" />
           <span className="sr-only">رجوع</span>
       </button>
       <h3 className="text-2xl font-bold mb-4">اختر الشكل الصحيح</h3>
@@ -94,6 +98,8 @@ const ShapeGame: React.FC<{ onBack: () => void }> = ({ onBack }) => {
             </button>
         )})}
       </div>
+      <audio ref={successAudioRef} src="https://actions.google.com/sounds/v1/positive/success.ogg" preload="auto" />
+      <audio ref={failureAudioRef} src="https://actions.google.com/sounds/v1/errors/error_swoosh.ogg" preload="auto" />
     </div>
   );
 };
