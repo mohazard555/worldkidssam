@@ -1,10 +1,10 @@
 import React, { useState, useContext, ChangeEvent, useRef } from 'react';
 import { GoogleGenAI, Type } from "@google/genai";
-import { AppData, AppSettings, Story, StoryPage, Advertisement, QuizQuestion, ColoringPage, Drawing, FunFact, AnimalFlashcard, ColorFlashcard, NumberFlashcard, ShapeFlashcard, FunnyFlashcard, AlphabetFlashcard } from '../types';
+import { AppData, AppSettings, Story, StoryPage, Advertisement, QuizQuestion, ColoringPage, Drawing, FunFact, AnimalFlashcard, ColorFlashcard, NumberFlashcard, ShapeFlashcard, FunnyFlashcard, AlphabetFlashcard, EnglishWordFlashcard } from '../types';
 import { AppContext } from '../App';
-import { CloseIcon, SettingsIcon, BookIcon, GiftIcon, SyncIcon, TrashIcon, EditIcon, PlusIcon, MusicIcon, SparkleIcon, QuestionIcon, PaletteIcon, PuzzleIcon, LightbulbIcon, AbcIcon } from './Icons';
+import { CloseIcon, SettingsIcon, BookIcon, GiftIcon, SyncIcon, TrashIcon, EditIcon, PlusIcon, MusicIcon, SparkleIcon, QuestionIcon, PaletteIcon, PuzzleIcon, LightbulbIcon, AbcIcon, AbcEnIcon } from './Icons';
 
-export type Tab = 'general' | 'stories' | 'ads' | 'sync' | 'fun' | 'quizzes' | 'drawings' | 'puzzles' | 'facts' | 'flashcards';
+export type Tab = 'general' | 'stories' | 'ads' | 'sync' | 'fun' | 'quizzes' | 'drawings' | 'puzzles' | 'facts' | 'flashcards' | 'english';
 
 const fileToBase64 = (file: File): Promise<string> => {
   return new Promise((resolve, reject) => {
@@ -34,8 +34,8 @@ const SettingsModal: React.FC<{ onClose: () => void; initialTab?: Tab }> = ({ on
   // General Settings Handlers
   const handleSettingsChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
-    const isYoutube = name === 'youtubeUrls';
-    setLocalData(prev => ({ ...prev, settings: { ...prev.settings, [name]: isYoutube ? value.split('\n') : value } }));
+    const isList = name === 'youtubeUrls' || name === 'songUrls';
+    setLocalData(prev => ({ ...prev, settings: { ...prev.settings, [name]: isList ? value.split('\n') : value } }));
   };
   const handleLogoChange = async (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -459,6 +459,61 @@ const handleDeletePuzzleImage = (pageId: string) => {
     }
   };
 
+  // English Flashcard Handlers
+  const handleAddEnglishWord = () => {
+    const newCard: EnglishWordFlashcard = {
+      id: `eng-${Date.now()}`,
+      englishWord: 'New Word',
+      arabicMeaning: 'معنى جديد',
+      imageUrl: '',
+    };
+    setLocalData(prev => ({
+        ...prev,
+        settings: {
+            ...prev.settings,
+            englishWordFlashcards: [...(prev.settings.englishWordFlashcards || []), newCard]
+        }
+    }));
+  };
+
+  const handleDeleteEnglishWord = (id: string) => {
+    if (!window.confirm("هل أنت متأكد من حذف هذه البطاقة؟")) return;
+    setLocalData(prev => ({
+        ...prev,
+        settings: {
+            ...prev.settings,
+            englishWordFlashcards: (prev.settings.englishWordFlashcards || []).filter(card => card.id !== id)
+        }
+    }));
+  };
+
+  const handleEnglishWordChange = (id: string, field: 'englishWord' | 'arabicMeaning', value: string) => {
+    setLocalData(prev => ({
+        ...prev,
+        settings: {
+            ...prev.settings,
+            englishWordFlashcards: (prev.settings.englishWordFlashcards || []).map(card =>
+                card.id === id ? { ...card, [field]: value } : card
+            )
+        }
+    }));
+  };
+
+  const handleEnglishWordImageChange = async (id: string, e: ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const base64 = await fileToBase64(e.target.files[0]);
+      setLocalData(prev => ({
+        ...prev,
+        settings: {
+            ...prev.settings,
+            englishWordFlashcards: (prev.settings.englishWordFlashcards || []).map(card =>
+                card.id === id ? { ...card, imageUrl: base64 } : card
+            )
+        }
+      }));
+    }
+  };
+
   // Sync Handlers
   const handleGistChange = (e: ChangeEvent<HTMLInputElement>) => {
       const {name, value} = e.target;
@@ -621,6 +676,13 @@ const handleDeletePuzzleImage = (pageId: string) => {
                     <textarea name="youtubeUrls" value={(localData.settings.youtubeUrls || []).join('\n')} onChange={handleSettingsChange} rows={4} className="w-full px-4 py-2 bg-white border-2 border-blue-200 rounded-2xl shadow-inner focus:ring-yellow-400 focus:border-yellow-400" />
                     <p className="text-xs text-gray-500 mt-1">
                         ستظهر هذه الفيديوهات كبطاقات في قسم "شاهد على يوتيوب". سيتم اختيار فيديو عشوائي أيضاً ليظهر قبل بدء القصة.
+                    </p>
+                 </div>
+                 <div>
+                    <label className="block text-sm font-bold text-gray-600 mb-1">روابط أغاني أطفال (رابط بكل سطر)</label>
+                    <textarea name="songUrls" value={(localData.settings.songUrls || []).join('\n')} onChange={handleSettingsChange} rows={4} className="w-full px-4 py-2 bg-white border-2 border-blue-200 rounded-2xl shadow-inner focus:ring-yellow-400 focus:border-yellow-400" />
+                    <p className="text-xs text-gray-500 mt-1">
+                        ستظهر هذه الأغاني في قسم "أغاني أطفال" في تبويب التسلية.
                     </p>
                  </div>
                  <div>
@@ -914,6 +976,42 @@ const handleDeletePuzzleImage = (pageId: string) => {
                 </details>
              </div>
         );
+        case 'english': return (
+            <div className="space-y-4">
+                <div className="flex justify-between items-center">
+                    <h3 className="text-xl font-bold text-slate-700">إدارة بطاقات اللغة الإنجليزية</h3>
+                    <button onClick={handleAddEnglishWord} className="flex items-center space-x-2 space-x-reverse bg-green-500 text-white font-bold py-2 px-4 rounded-full hover:bg-green-600 transition-all shadow-md">
+                        <PlusIcon className="w-5 h-5"/>
+                        <span>إضافة بطاقة</span>
+                    </button>
+                </div>
+                <div className="space-y-3 max-h-[400px] overflow-y-auto pr-2">
+                    {(localData.settings.englishWordFlashcards || []).map((card) => (
+                        <div key={card.id} className="bg-blue-100 p-3 rounded-xl border-2 border-blue-200">
+                             <div className="flex items-start space-x-3 space-x-reverse">
+                                <div className="flex-shrink-0">
+                                    <img src={card.imageUrl || 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7'} alt="Preview" className="w-24 h-24 rounded-lg object-cover bg-slate-200 border-2 border-white" />
+                                    <input type="file" accept="image/*" onChange={(e) => handleEnglishWordImageChange(card.id, e)} className="block w-24 text-xs mt-1"/>
+                                </div>
+                                <div className="flex-grow space-y-2">
+                                     <div>
+                                        <label className="block text-sm font-bold text-gray-600 mb-1">English Word</label>
+                                        <input type="text" value={card.englishWord} onChange={(e) => handleEnglishWordChange(card.id, 'englishWord', e.target.value)} className="w-full px-3 py-1 bg-white border border-blue-200 rounded-lg" dir="ltr"/>
+                                    </div>
+                                     <div>
+                                        <label className="block text-sm font-bold text-gray-600 mb-1">المعنى بالعربية</label>
+                                        <input type="text" value={card.arabicMeaning} onChange={(e) => handleEnglishWordChange(card.id, 'arabicMeaning', e.target.value)} className="w-full px-3 py-1 bg-white border border-blue-200 rounded-lg"/>
+                                    </div>
+                                </div>
+                                <button onClick={() => handleDeleteEnglishWord(card.id)} className="p-2 text-red-600 hover:text-red-800 bg-red-100 rounded-full flex-shrink-0">
+                                    <TrashIcon className="w-5 h-5"/>
+                                </button>
+                             </div>
+                        </div>
+                    ))}
+                </div>
+            </div>
+        );
         case 'fun': return (
             <div className="space-y-4">
                 <h3 className="text-xl font-bold text-slate-700">إدارة قسم تلوين ومرح</h3>
@@ -1110,6 +1208,7 @@ const handleDeletePuzzleImage = (pageId: string) => {
                  <TabButton tab="general" icon={<SettingsIcon className="w-6 h-6" />} label="عام" />
                  <TabButton tab="stories" icon={<BookIcon className="w-6 h-6" />} label="القصص" />
                  <TabButton tab="flashcards" icon={<AbcIcon className="w-6 h-6" />} label="بطاقات" />
+                 <TabButton tab="english" icon={<AbcEnIcon className="w-6 h-6" />} label="إنجليزية" />
                  <TabButton tab="fun" icon={<SparkleIcon className="w-6 h-6" />} label="تسلية" />
                  <TabButton tab="quizzes" icon={<QuestionIcon className="w-6 h-6" />} label="ألغاز" />
                  <TabButton tab="drawings" icon={<PaletteIcon className="w-6 h-6" />} label="المعرض" />

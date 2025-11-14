@@ -20,13 +20,18 @@ import BuildHouseGame from './BuildHouseGame';
 import JigsawPuzzleGame from './JigsawPuzzleGame';
 import FindArabicLetterGame from './FindArabicLetterGame';
 import FindEnglishLetterGame from './FindEnglishLetterGame';
+import VehicleSoundsGame from './VehicleSoundsGame';
+import BodyPartsGame from './BodyPartsGame';
+import BlockBuildingGame from './BlockBuildingGame';
+import CompleteWordGame from './CompleteWordGame';
 
 import { 
-    PaletteIcon, PawIcon, AbcIcon, NumberIcon, ShapesIcon, SpotTheDifferenceIcon, OrderingGameIcon, FindObjectIcon, FirstLetterIcon, WordFormationIcon, AdditionIcon, ComparisonIcon, HabitatIcon, WeatherIcon, BehaviorIcon, FeelingsIcon, DesignCharacterIcon, BuildHouseIcon, JigsawIcon, FindLetterIcon
+    PaletteIcon, PawIcon, AbcIcon, NumberIcon, ShapesIcon, SpotTheDifferenceIcon, OrderingGameIcon, FindObjectIcon, FirstLetterIcon, WordFormationIcon, AdditionIcon, ComparisonIcon, HabitatIcon, WeatherIcon, BehaviorIcon, FeelingsIcon, DesignCharacterIcon, BuildHouseIcon, JigsawIcon, FindLetterIcon,
+    VehicleIcon, BodyPartsIcon, BlockBuildingIcon, CompleteWordIcon
 } from './Icons';
 
 // Fix: Split Game type to avoid using null as a Record key.
-type GameType = 'colors' | 'animals' | 'matching' | 'numbers' | 'shapes' | 'spot-the-difference' | 'ordering' | 'find-object' | 'first-letter' | 'word-formation' | 'addition' | 'comparison' | 'habitat' | 'weather' | 'behavior' | 'feelings' | 'design-character' | 'build-house' | 'jigsaw-puzzle' | 'find-arabic-letter' | 'find-english-letter';
+type GameType = 'colors' | 'animals' | 'matching' | 'numbers' | 'shapes' | 'spot-the-difference' | 'ordering' | 'find-object' | 'first-letter' | 'word-formation' | 'addition' | 'comparison' | 'habitat' | 'weather' | 'behavior' | 'feelings' | 'design-character' | 'build-house' | 'jigsaw-puzzle' | 'find-arabic-letter' | 'find-english-letter' | 'vehicle-sounds' | 'body-parts' | 'block-building' | 'complete-word';
 type Game = GameType | null;
 
 interface GameCardProps {
@@ -75,6 +80,10 @@ const InteractiveGames: React.FC = () => {
         'jigsaw-puzzle': <JigsawPuzzleGame onBack={() => setActiveGame(null)} />,
         'find-arabic-letter': <FindArabicLetterGame onBack={() => setActiveGame(null)} />,
         'find-english-letter': <FindEnglishLetterGame onBack={() => setActiveGame(null)} />,
+        'vehicle-sounds': <VehicleSoundsGame onBack={() => setActiveGame(null)} />,
+        'body-parts': <BodyPartsGame onBack={() => setActiveGame(null)} />,
+        'block-building': <BlockBuildingGame onBack={() => setActiveGame(null)} />,
+        'complete-word': <CompleteWordGame onBack={() => setActiveGame(null)} />,
     };
     
     if (activeGame && gameComponents[activeGame]) {
@@ -83,6 +92,10 @@ const InteractiveGames: React.FC = () => {
 
     return (
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 animate-fade-in">
+            <GameCard onClick={() => setActiveGame('complete-word')} title="أكمل الكلمة" description="اختر الكلمة المناسبة" icon={<CompleteWordIcon className="w-12 h-12" />} color="bg-gradient-to-br from-lime-400 to-green-600" />
+            <GameCard onClick={() => setActiveGame('vehicle-sounds')} title="صور المركبات" description="خمن اسم المركبة" icon={<VehicleIcon className="w-12 h-12" />} color="bg-gradient-to-br from-slate-400 to-gray-600" />
+            <GameCard onClick={() => setActiveGame('body-parts')} title="أجزاء الجسم" description="تعرف على جسم الإنسان" icon={<BodyPartsIcon className="w-12 h-12" />} color="bg-gradient-to-br from-pink-400 to-rose-500" />
+            <GameCard onClick={() => setActiveGame('block-building')} title="بناء المكعبات" description="اطلق العنان لإبداعك" icon={<BlockBuildingIcon className="w-12 h-12" />} color="bg-gradient-to-br from-amber-400 to-yellow-500" />
             <GameCard onClick={() => setActiveGame('jigsaw-puzzle')} title="تركيب الصور" description="جمع القطع المبعثرة" icon={<JigsawIcon className="w-12 h-12" />} color="bg-gradient-to-br from-teal-400 to-cyan-600" />
             <GameCard onClick={() => setActiveGame('find-arabic-letter')} title="ابحث عن الحرف" description="الأحرف العربية" icon={<FindLetterIcon className="w-12 h-12" />} color="bg-gradient-to-br from-orange-400 to-red-500" />
             <GameCard onClick={() => setActiveGame('find-english-letter')} title="Find the Letter" description="English Alphabet" icon={<FindLetterIcon className="w-12 h-12" />} color="bg-gradient-to-br from-sky-400 to-indigo-500" />

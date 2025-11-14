@@ -72,11 +72,19 @@ export interface FunnyFlashcard {
     image: string; // emoji
 }
 
+export interface EnglishWordFlashcard {
+  id: string;
+  englishWord: string;
+  arabicMeaning: string;
+  imageUrl: string; // base64
+}
+
 
 export interface AppSettings {
   siteTitle: string;
   logoUrl: string; // base64
   youtubeUrls: string[];
+  songUrls: string[];
   externalLink: string;
   backgroundMusicUrl?: string; // base64 data URL
   backgroundImageUrl?: string; // base64
@@ -96,6 +104,7 @@ export interface AppSettings {
   funnyFlashcards: FunnyFlashcard[];
   arabicAlphabetData: AlphabetFlashcard[];
   englishAlphabetData: AlphabetFlashcard[];
+  englishWordFlashcards: EnglishWordFlashcard[];
 }
 
 export interface Advertisement {

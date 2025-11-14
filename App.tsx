@@ -1,11 +1,11 @@
 import React, { useState, createContext, useMemo, useEffect, useRef } from 'react';
-import { AppData, Story, Advertisement } from './types';
+import { AppData, Story, Advertisement, AppSettings, EnglishWordFlashcard } from './types';
 import StoryCard from './components/StoryCard';
 import StoryViewer from './components/StoryViewer';
 import SettingsModal, { Tab } from './components/SettingsModal';
 import AdModal from './components/AdModal';
 import useLocalStorage from './hooks/useLocalStorage';
-import { SettingsIcon, ArrowLeftIcon, ArrowRightIcon, SearchIcon, BookIcon, SparkleIcon, YoutubeIcon, QuestionIcon, PaletteIcon, SpeakerOnIcon, SpeakerOffIcon, GiftIcon, PuzzleIcon, LightbulbIcon, PawIcon, AbcIcon } from './components/Icons';
+import { SettingsIcon, ArrowLeftIcon, ArrowRightIcon, SearchIcon, BookIcon, SparkleIcon, YoutubeIcon, QuestionIcon, PaletteIcon, SpeakerOnIcon, SpeakerOffIcon, GiftIcon, PuzzleIcon, LightbulbIcon, PawIcon, AbcIcon, MusicIcon, AbcEnIcon } from './components/Icons';
 import ColoringBook from './components/ColoringBook';
 import YoutubeSection from './components/YoutubeSection';
 import QuizSection from './components/QuizSection';
@@ -16,6 +16,8 @@ import DidYouKnow from './components/DidYouKnow';
 import InteractiveGames from './components/InteractiveGames';
 import Flashcards from './components/Flashcards';
 import CartoonBox from './components/CartoonBox';
+import KidsSongsSection from './components/KidsSongsSection';
+import EnglishWordsSection from './components/EnglishWordsSection';
 
 type View = 'home' | 'ad' | 'youtube' | 'story';
 type MainTab = 'stories' | 'games' | 'fun' | 'flashcards';
@@ -39,6 +41,7 @@ const DEFAULT_APP_DATA: AppData = {
         siteTitle: "عالم قصص الأطفال",
         logoUrl: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0iI2Y5YTgwNSI+PHBhdGggZD0iTTEyIDE3LjI3TDE4LjE4IDIxbC0xLjY0LTcuMDNMMjIgOS4yNGwtNy4xOS0uNjFMMTIgMiA5LjE5IDguNjMgMiA5LjI0bDUuNDYgNC43M0w1LjgyIDIxeiIvPjwvc3ZnPg==",
         youtubeUrls: ["https://www.youtube.com/watch?v=dQw4w9WgXcQ"],
+        songUrls: [],
         externalLink: "https://www.google.com/search?q=parental+consent+form",
         backgroundImageUrl: '',
         developerName: '',
@@ -46,7 +49,7 @@ const DEFAULT_APP_DATA: AppData = {
         siteNotice: "مرحباً يا أصدقاء! لا تنسوا تفقد قسم الألعاب التفاعلية الممتعة!",
         aboutSectionText: "أهلاً بكم في عالم قصص الأطفال! هنا يمكنكم قراءة القصص الجميلة، اللعب بالألعاب المسلية، تلوين الصور الرائعة، ومشاهدة الفيديوهات الممتعة. نتمنى لكم وقتاً سعيداً!",
         coloringPages: [
-            { id: 'coloring-dino', imageUrl: 'data:image/svg+xml;base64,PHN2ZyB2aWV3Qm94PSIwIDAgMTAwIDEwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBzdHJva2U9ImJsYWNrIiBzdHJva2Utd2lkdGg9IjIiIGZpbGw9IndoaXRlIj48cGF0aCBkPSJNIDUwLDgwIEMgNDAsOTUgMjAsOTUgMTAsODAgUSA1LDcwIDE1LDYwIEMgMjAsNTAgMzAsNTAgMzUsNjAgQyA0MCw2NSA0NSw3MCA1MCw4MCBaIiAvPjxwYXRoIGQ9Ik0gMzUsNjAgQyAzMCw0MCA0MCwyMCA2MCwyMCBDIDgwLDIwIDkwLDQwIDg1LDYwIFEgODAsNzAgNzAsNzAgTCA1MCw4MCBaIiAvPjxjaXJjbGUgY3g9Ijc1IiBjeT0iMzUiIHI9IjMiIGZpbGw9ImJsYWNrIi8+PHBhdGggZD0iTSA3MCA0NSBRIDc1IDUwIDgwIDQ1IiBzdHJva2U9ImJsYWNrIiBzdHJva2Utd2lkdGg9IjEuNSIgZmlsbD0ibm9uZSIvPjwvZz48L3N2Zz4=' },
+            { id: 'coloring-dino', imageUrl: 'data:image/svg+xml;base64,PHN2ZyB2aWV3Qm94PSIwIDAgMTAwIDEwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBzdHJva2U9ImJsYWNrIiBzdHJva2Utd2lkdGg9IjIiIGZpbGw9IndoaXRlIj48cGF0aCBkPSJNIDUwLDgwIEMgNDAsOTUgMjAsOTUgMTAsODAgUSA1LDcwIDE1LDYwIEMgMjAsNTAgMzAsNTAgMzUsNjAgQyA0MCw2NSA0NSw3MCA1MCw4MCBaIiAvPjxwYXRoIGQ9Ik0gMzUsNjAgQyAzMCw0MCA0MCwyMCA2MCwyMCBDIDgwLDIwIDkwLDQwIDg1LDYwIFEgODAsNzAgNzAsNzAgTCA1MCw4MCBaIiAvPjxjaXJjbGUgY3g9Ijc1IiBjeT0iMzUiIHI9IjMiIGZpbGw9ImJsYWNrIiAvPjxwYXRoIGQ9Ik0gNzAgNDVSBRIDc1IDUwIDgwIDQ1IiBzdHJva2U9ImJsYWNrIiBzdHJva2Utd2lkdGg9IjEuNSIgZmlsbD0ibm9uZSIvPjwvZz48L3N2Zz4=' },
             { id: 'coloring-robot', imageUrl: 'data:image/svg+xml;base64,PHN2ZyB2aWV3Qm94PSIwIDAgMTAwIDEwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBzdHJva2U9ImJsYWNrIiBzdHJva2Utd2lkdGg9IjIiIGZpbGw9IndoaXRlIj48cmVjdCB4PSIzMCIgeT0iMjAiIHdpZHRoPSI0MCIgaGVpZ2h0PSIzMCIgcng9IjUiIC8+PHJlY3QgeD0iMjUiIHk9IjUwIiB3aWR0aD0iNTAiIGhlaWdodD0iNDAiIHJ4PSI1IiAvPjxjaXJjbGUgY3g9IjQwIiBjeT0iMzUiIHI9IjQiIGZpbGw9ImJsYWNrIiAvPjxjaXJjbGUgY3g9IjYwIiBjeT0iMzUiIHI9IjQiIGZpbGw9ImJsYWNrIiAvPjxyZWN0IHg9IjQwIiB5PSI0MiIgd2lkdGg9IjIwIiBoZWlnaHQ9IjMiIGZpbGw9ImJsYWNrIiAvPjxyZWN0IHg9IjE1IiB5PSI1NSIgd2lkdGg9IjEwIiBoZWlnaHQ9IjI1IiAvPjxyZWN0IHg9Ijc1IiB5PSI1NSIgd2lkdGg9IjEwIiBoZWlnaHQ9IjI1IiAvPjxyZWN0IHg9IjM1IiB5PSI5MCIgd2lkdGg9IjEwIiBoZWlnaHQ9IjEwIiAvPjxyZWN0IHg9IjU1IiB5PSI5MCIgd2lkdGg9IjEwIiBoZWlnaHQ9IjEwIiAvPjwvZz48L3N2Zz4=' },
             { id: 'coloring-butterfly', imageUrl: 'data:image/svg+xml;base64,PHN2ZyB2aWV3Qm94PSIwIDAgMTAwIDEwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBzdHJva2U9ImJsYWNrIiBzdHJva2Utd2lkdGg9IjIiIGZpbGw9IndoaXRlIj48cGF0aCBkPSJNIDUwLDIwIEMgMjAsMTAgMTAsNTAgNTAsNTAgQyA5MCw1MCA4MCwxMCA1MCwyMCBaIiAvPjxwYXRoIGQ9Ik0gNTAsODAgQyAyMCw5MCAxMCw1MCA1MCw1MCBDIDkwLDUwIDgwLDkwIDUwLDgwIFoiIC8+PHBhdGggZD0iTSA0OCAyMCBMIDQ4IDgwIE0gNTIgMjAgTCA1MiA4MCIgc3Ryb2tlLXdpZHRoPSIxIi8+PGNpcmNsZSBjeD0iNTAiIGN5PSIxNSIgcj0iNCIvPjxsaW5lIHgxPSI0NSIgeTE9IjEwIiB4Mj0iNDAiIHkyPSI1Ii8+PGxpbmUgeDE9IjU1IiB5MT0iMTAiIHgyPSI2MCIgeTI9IjUiLz48L2c+PC9zdmc+' },
             { id: 'coloring-rocket', imageUrl: 'data:image/svg+xml;base64,PHN2ZyB2aWV3Qm94PSIwIDAgMTAwIDEwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBzdHJva2U9ImJsYWNrIiBzdHJva2Utd2lkdGg9IjIiIGZpbGw9IndoaXRlIj48cGF0aCBkPSJNIDUwIDEwIEwgNzAgNDAgTCA3MCA4MCBRIDUwIDk1IDMwIDgwIEwgMzAgNDAgWiIgLz48cG9seWdvbiBwb2ludHM9IjUwLDEwIDQwLDI1IDYwLDI1IiBmaWxsPSJ3aGl0ZSIgc3Ryb2tlPSJibGFjayIgc3Ryb2tlLXdpZHRoPSIyIiAvPjxjaXJjbGUgY3g9IjUwIiBjeT0iNTUiIHI9IjEwIiAvPjxwb2x5Z29uIHBvaW50cz0iMzAsODAgMjAsOTUgNDAsODAiIC8+PHBvbHlnb24gcG9pbnRzPSI3MCw4MCA2MCw4MCA4MCw5NSIgLz48L2c+PC9zdmc+' },
@@ -77,7 +80,7 @@ const DEFAULT_APP_DATA: AppData = {
             {
                 id: 'fact-2',
                 text: 'النمل لا ينام أبدًا!',
-                imageUrl: 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgZmlsbD0iI0E2NzY1OCI+PC9yZWN0PjxyZWN0IHg9IjQwIiB5PSI0MCIgd2lkdGg9IjIwIiBoZWlnaHQ9IjMwIiByeD0iMTAiIGZpbGw9IiMzNzE5MEUiPjwvcmVjdD48cmVjdCB4PSIyMCIgeT0iNTAiIHdpZHRoPSI2MCIgaGVpZHRoPSIyMCIgcng9IjEwIiBmaWxsPSIjNTk0MDA4Ij48L3JlY3Q+PGNpcmNsZSBjeD0iNTAiIGN5PSIzMCIgcj0iMTAiIGZpbGw9IiMzNzE5MEUiPjwvY2lyY2xlPjwvc3ZnPg==',
+                imageUrl: 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgZmlsbD0iI0E2NzY1OCI+PC9yZWN0PjxyZWN0IHg9IjQwIiB5PSI0MCIgd2lkdGg9IjIwIiBoZWlnaHQ9IjMwIiByeD0iMTAiIGZpbGw9IiMzNzE5MEUiPjwvcmVjdD48cmVjdCB4PSIyMCIgeT0iNTAiIHdpZHRoPSI2MCIgaGVpZ2h0PSIyMCIgcng9IjEwIiBmaWxsPSIjNTk0MDA4Ij48L3JlY3Q+PGNpcmNsZSBjeD0iNTAiIGN5PSIzMCIgcj0iMTAiIGZpbGw9IiMzNzE5MEUiPjwvY2lyY2xlPjwvc3ZnPg==',
             },
         ],
         animalFlashcards: [],
@@ -120,26 +123,51 @@ const DEFAULT_APP_DATA: AppData = {
         funnyFlashcards: [
             { name: 'وحش', image: 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0iIzQzY2I1MSI+PHBhdGggZD0iTTE2IDRjMS4xMSAwIDIuODMuNzEgNC4xMSAySDExYy0uMzIgMC0uNjIuMDgtLjg5LjIxQzEwLjYxIDQuODggMTIgMy41IDEyIDJIMTZtMy41IDljLjgyIDAgMS41LjY3IDEuNSAxLjVzLS42NyAxLjUtMS41IDEuNS0xLjUtLjY3LTEuNS0xLjNS42Ny0xLjUgMS41LTEuNXptLTggMGMuODIgMCAxLjUuNjcgMS41IDEuNVMxMi4zMyAxNSAxMS41IDE1cy0xLjUtLjY3LTEuNS0xLjUuNjctMS41IDEuNS0xLjV6bTQuNSA0YzMuMzEgMCA2LTIuNjkgNi02cy0yLjY5LTYtNi02aC00Yy0uNjYgMC0xLjI4LjE3LTEuODIuNDVDNC42NyA3LjQ4IDIgOS42NCAyLjAyIDE0YzAgMS4yLjM3IDIuMjggMSAzLjAyVjIwgaDE2di0yLjk4Yy42MS0uNzMuOTgtMS44IDEtMi45MiAwLTMuMzEtMi42OS02LTYtNmgtek0xMiAyMmMtMS4xMSAwLTItLjg5LTItMnM4LTkgOC05YzAgLjE3LS4wMi4zNC0uMDMuNTFDMTcuNjEgOC4xOCAxNi4wOCA3IDE0IDdoLTRjLTEuNTcgMC0yLjg4Ljg2LTMuNTQgMi4xM0M2LjE3IDkuNDYgNiA5LjcyIDYgMTBjMCAyLjQyIDEuNzIgNC40NCA0IDUuNEM5LjM3IDE1LjY2IDguNzEgMTYgOCAxNmMtMS4xMSAwLTItLjg5LTItMnMtMi4yOS0uNTgtMy0uODJWMjBoMWMuMzYgMCAuNjkuMTkuODguNDlsMS40Mi0xLjQxQzYuOTggMTcuMDYgNi41IDE2LjU2IDYgMTZ6Ii8+PC9zdmc+' },
             { name: 'شبح', image: 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0iI2FkYjRkMCI+PHBhdGggZD0iTTggNGMtMy4zMSAwLTYgMi42OS02IDZ2OGgxLjc1Yy43MSAwIDEuMzEtLjM4IDEuNjMtMS4wMUwxMiAxMy40MWwxLjYyIDQuNThjLjMyLjYzLjkyIDEuMDEgMS42MyAxLjAxSDE4VjEwYzAtMy4zMS0yLjY5LTYtNi02SDh6bTIuNSA1Yy44MyAwIDEuNS42NyAxLjUgMS41UzExLjMzIDEyIDEwLjUgMTJzLTEuNS0uNjctMS41LTEuNS42Ny0xLjUgMS41LTEuNXptMyAwdjNjMCAuNTUuNDUgMSAxIDFoM2MuNTUgMCAxLS40NSAxLTFWOS41YzAtLjgyLS42Ny0xLjUtMS41LTEuNXMtMS41LjY3LTEuNSAxLjV6Ii8+PC9zdmc+' },
-            { name: 'روبوت', image: 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0iIzM3NDFsNSI+PHBhdGggZD0iTTQgNGMtMS4xMSAwLTIgLjg5LTIgMnYxMmg1LjV2NEgyMXYtNEgyNHYtMmgtMy41di0xSDI0VjZoLTJWNGgtM3YySDdWNEM1LjM0IDQgNCA1LjM0IDQgNHptMy41IDZjLjgyIDAgMS41LjY3IDEuNSAxLjVTLOC4zMyAxMyA3LjUgMTNzLTEuNS0uNjctMS41LTEuNS42Ny0xLjUgMS41LTEuNXptOSA2Yy44MyAwIDEuNS42NyAxLjUgMS41UzE3LjMzIDE5IDE2LjUgMTlzLTEuNS0uNjctMS41LTEuNS42Ny0xLjUgMS41LTEuNXptMC0xMGMuODMgMCAxLjUuNjcgMS41IDEuNVMxNy4zMyA4IDE2LjUgOHMtMS41LS42Ny0xLjUtMS41LjY3LTEuNSAxLjUtMS41ek03IDJoMnYySDdWMnptOCAwaDJ2MmgLTJWMnoiLz48L3N2Zz4=' },
+            { name: 'روبوت', image: 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0iIzM3NDFsNSI+PHBhdGggZD0iTTE5IDZoLTJWNGgtMmMtMS4xMSAwLTItLjg5LTItMlM5Ljg5IDAgOSAwaC02YzAgMi4yMSAxLjc5IDQgNCA0djJoLTJjLTEuNjYgMC0zIDEuMzQtMyAzbC0xIDVjLS4xNy44My4xOCAxLjY3LjgxIDIuMThWMTljMCAxLjExLjg5IDIgMiAyaDEwYzEuMTEgMCAyLS44OSAyLTJ2LTEuODJjLjYyLS41MS45OC0xLjM1LjgyLTIuMThsLTEtNVY5YzAtMS42Ni0xLjM0LTMtMy0zek03LjUgMTNjLS44MyAwLTEuNS0uNjctMS41LTEuNVM2LjY3IDEwIDcuNSAxMHMxLjUuNjcgMS41IDEuNVM4LjMzIDEzIDcuNSAxM3ptOSA2Yy0uODMgMC0xLjUtLjY3LTEuNS0xLjVzLjY3LTEuNSAxLjUtMS41IDEuNS42NyAxLjUgMS41LS42NyAxLjUtMS41IDEuNXptMC0xMGMtLjgzIDAtMS41LS42Ny0xLjUtMS41UzE1LjY3IDEwIDE2LjUgMTBzMS41LjY3IDEuNSAxLjVzLS42NyAxLjUtMS41IDEuNXoiLz48L3N2Zz4=' },
         ],
         arabicAlphabetData: [],
         englishAlphabetData: [],
+        englishWordFlashcards: [],
     },
     stories: [],
     advertisements: [],
-    gist: {
-        rawUrl: '',
-        accessToken: ''
-    }
+    gist: { rawUrl: '', accessToken: '' }
 };
 
 const App: React.FC = () => {
-    const [appData, setAppData] = useLocalStorage<AppData>('stories-app-data', DEFAULT_APP_DATA);
+    const [savedAppData, setSavedAppData] = useLocalStorage<AppData>('stories-app-data', DEFAULT_APP_DATA);
+
+    const appData = useMemo(() => {
+        const settings: AppSettings = {
+            ...DEFAULT_APP_DATA.settings,
+            ...(savedAppData.settings || {}),
+        };
+        
+        // Ensure all array properties exist to prevent crashes
+        for (const key in DEFAULT_APP_DATA.settings) {
+            const propKey = key as keyof AppSettings;
+            if (Array.isArray(DEFAULT_APP_DATA.settings[propKey]) && !settings[propKey]) {
+                (settings as any)[propKey] = [];
+            }
+        }
+
+        return {
+            settings,
+            stories: savedAppData.stories || DEFAULT_APP_DATA.stories,
+            advertisements: savedAppData.advertisements || DEFAULT_APP_DATA.advertisements,
+            gist: { ...DEFAULT_APP_DATA.gist, ...(savedAppData.gist || {}) },
+        };
+    }, [savedAppData]);
+    
+    const setAppData = (data: AppData) => {
+        setSavedAppData(data);
+    };
+
     const [selectedStory, setSelectedStory] = useState<Story | null>(null);
-    const [currentView, setCurrentView] = useState<View>('home');
-    const [activeAd, setActiveAd] = useState<Advertisement | null>(null);
     const [isSettingsOpen, setIsSettingsOpen] = useState(false);
     const [settingsTab, setSettingsTab] = useState<Tab>('general');
+    const [currentView, setCurrentView] = useState<View>('home');
+    const [activeAd, setActiveAd] = useState<Advertisement | null>(null);
     const [activeTab, setActiveTab] = useState<MainTab>('stories');
     const [isMuted, setIsMuted] = useState(true);
     const musicRef = useRef<HTMLAudioElement>(null);
@@ -229,7 +257,7 @@ const App: React.FC = () => {
                 <>
                     <SectionCard
                         title="ألعاب تفاعلية"
-                        count={18}
+                        count={25}
                         icon={<SparkleIcon className="w-8 h-8" />}
                         colorClasses="from-rose-500 to-red-600"
                     >
@@ -255,6 +283,14 @@ const App: React.FC = () => {
             );
             case 'fun': return (
                  <>
+                    <SectionCard
+                        title="تعلم الإنجليزية"
+                        count={(appData.settings.englishWordFlashcards || []).length}
+                        icon={<AbcEnIcon className="w-8 h-8" />}
+                        colorClasses="from-blue-400 to-sky-500"
+                    >
+                        <EnglishWordsSection />
+                    </SectionCard>
                     <SectionCard
                         title="تلوين ومرح"
                         count={(appData.settings.coloringPages || []).length}
@@ -286,6 +322,14 @@ const App: React.FC = () => {
                         colorClasses="from-red-500 to-rose-600"
                     >
                         <YoutubeSection />
+                    </SectionCard>
+                    <SectionCard
+                        title="أغاني أطفال"
+                        count={(appData.settings.songUrls || []).filter(u => u.trim() !== '').length}
+                        icon={<MusicIcon className="w-8 h-8" />}
+                        colorClasses="from-teal-400 to-cyan-500"
+                    >
+                        <KidsSongsSection />
                     </SectionCard>
                 </>
             );
