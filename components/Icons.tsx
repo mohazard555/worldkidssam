@@ -204,3 +204,16 @@ export const DesignCharacterIcon: React.FC<{ className?: string }> = ({ classNam
 export const BuildHouseIcon: React.FC<{ className?: string }> = ({ className }) => (
     <svg className={className} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3L2 12h3v8h14v-8h3L12 3zm0 13.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/></svg>
 );
+
+export const FindLetterIcon: React.FC<{ className?: string }> = ({ className }) => (
+    <svg className={className} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M20.49 19l-4.99-5h.01c.97-1.13 1.5-2.58 1.5-4.13C17.01 5.42 13.58 2 9.51 2S2.01 5.42 2.01 9.87c0 4.45 3.43 8.12 7.5 8.12 1.48 0 2.85-.43 4-1.15l4.98 4.98c.29.29.77.29 1.06 0l.94-.94c.29-.29.29-.77 0-1.06zM9.51 16c-3.31 0-6-2.69-6-6s2.69-6 6-6 6 2.69 6 6-2.69 6-6 6z"/>
+        <path d="M8.5 11.2h.75l.9-2.25h.1l.9 2.25h.75L10.5 7h-1L8.5 11.2zM10 10.15L10.45 9l.45 1.15h-.9z"/>
+    </svg>
+);
+
+export const JigsawIcon: React.FC<{ className?: string }> = ({ className }) => (
+    <svg className={className} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M20.5 11H19V7c0-1.1-.9-2-2-2h-4V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V5H6c-1.1 0-2 .9-2 2v4H3.5c-.83 0-1.5.67-1.5 1.5s.67 1.5 1.5 1.5H4v4c0 1.1.9 2 2 2h4v1.5c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5V19h4c1.1 0 2-.9 2-2v-4h1.5c.83 0 1.5-.67 1.5-1.5s-.67-1.5-1.5-1.5z"/>
+    </svg>
+);

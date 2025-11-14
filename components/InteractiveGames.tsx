@@ -17,13 +17,16 @@ import BehaviorGame from './BehaviorGame';
 import FeelingsGame from './FeelingsGame';
 import DesignCharacterGame from './DesignCharacterGame';
 import BuildHouseGame from './BuildHouseGame';
+import JigsawPuzzleGame from './JigsawPuzzleGame';
+import FindArabicLetterGame from './FindArabicLetterGame';
+import FindEnglishLetterGame from './FindEnglishLetterGame';
 
 import { 
-    PaletteIcon, PawIcon, AbcIcon, NumberIcon, ShapesIcon, SpotTheDifferenceIcon, OrderingGameIcon, FindObjectIcon, FirstLetterIcon, WordFormationIcon, AdditionIcon, ComparisonIcon, HabitatIcon, WeatherIcon, BehaviorIcon, FeelingsIcon, DesignCharacterIcon, BuildHouseIcon
+    PaletteIcon, PawIcon, AbcIcon, NumberIcon, ShapesIcon, SpotTheDifferenceIcon, OrderingGameIcon, FindObjectIcon, FirstLetterIcon, WordFormationIcon, AdditionIcon, ComparisonIcon, HabitatIcon, WeatherIcon, BehaviorIcon, FeelingsIcon, DesignCharacterIcon, BuildHouseIcon, JigsawIcon, FindLetterIcon
 } from './Icons';
 
 // Fix: Split Game type to avoid using null as a Record key.
-type GameType = 'colors' | 'animals' | 'matching' | 'numbers' | 'shapes' | 'spot-the-difference' | 'ordering' | 'find-object' | 'first-letter' | 'word-formation' | 'addition' | 'comparison' | 'habitat' | 'weather' | 'behavior' | 'feelings' | 'design-character' | 'build-house';
+type GameType = 'colors' | 'animals' | 'matching' | 'numbers' | 'shapes' | 'spot-the-difference' | 'ordering' | 'find-object' | 'first-letter' | 'word-formation' | 'addition' | 'comparison' | 'habitat' | 'weather' | 'behavior' | 'feelings' | 'design-character' | 'build-house' | 'jigsaw-puzzle' | 'find-arabic-letter' | 'find-english-letter';
 type Game = GameType | null;
 
 interface GameCardProps {
@@ -69,6 +72,9 @@ const InteractiveGames: React.FC = () => {
         'feelings': <FeelingsGame onBack={() => setActiveGame(null)} />,
         'design-character': <DesignCharacterGame onBack={() => setActiveGame(null)} />,
         'build-house': <BuildHouseGame onBack={() => setActiveGame(null)} />,
+        'jigsaw-puzzle': <JigsawPuzzleGame onBack={() => setActiveGame(null)} />,
+        'find-arabic-letter': <FindArabicLetterGame onBack={() => setActiveGame(null)} />,
+        'find-english-letter': <FindEnglishLetterGame onBack={() => setActiveGame(null)} />,
     };
     
     if (activeGame && gameComponents[activeGame]) {
@@ -77,6 +83,9 @@ const InteractiveGames: React.FC = () => {
 
     return (
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 animate-fade-in">
+            <GameCard onClick={() => setActiveGame('jigsaw-puzzle')} title="تركيب الصور" description="جمع القطع المبعثرة" icon={<JigsawIcon className="w-12 h-12" />} color="bg-gradient-to-br from-teal-400 to-cyan-600" />
+            <GameCard onClick={() => setActiveGame('find-arabic-letter')} title="ابحث عن الحرف" description="الأحرف العربية" icon={<FindLetterIcon className="w-12 h-12" />} color="bg-gradient-to-br from-orange-400 to-red-500" />
+            <GameCard onClick={() => setActiveGame('find-english-letter')} title="Find the Letter" description="English Alphabet" icon={<FindLetterIcon className="w-12 h-12" />} color="bg-gradient-to-br from-sky-400 to-indigo-500" />
             <GameCard onClick={() => setActiveGame('design-character')} title="صمم شخصيتك" description="اختر الشعر والملابس" icon={<DesignCharacterIcon className="w-12 h-12" />} color="bg-gradient-to-br from-fuchsia-500 to-purple-600" />
             <GameCard onClick={() => setActiveGame('build-house')} title="ابنِ منزلك" description="ضع الأبواب والنوافذ" icon={<BuildHouseIcon className="w-12 h-12" />} color="bg-gradient-to-br from-orange-400 to-amber-500" />
             <GameCard onClick={() => setActiveGame('first-letter')} title="أول حرف" description="اختر الحرف الأول للكلمة" icon={<FirstLetterIcon className="w-12 h-12" />} color="bg-gradient-to-br from-red-500 to-orange-500" />

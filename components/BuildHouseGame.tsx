@@ -80,7 +80,6 @@ const BuildHouseGame: React.FC<{ onBack: () => void }> = ({ onBack }) => {
             <div
               key={id}
               className="absolute text-5xl"
-              // Fix: Cast `pos` to the correct type to resolve TS error.
               style={{ left: `${(pos as { x: number; y: number }).x - 28}px`, top: `${(pos as { x: number; y: number }).y - 28}px` }}
             >
               {PIECES.find(p => p.id === id)?.emoji}
