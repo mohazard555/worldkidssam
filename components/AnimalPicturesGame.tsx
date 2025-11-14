@@ -1,33 +1,33 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { ArrowRightIcon } from './Icons';
 
-const VEHICLES = [
-  { name: 'سيارة', emoji: '🚗' },
-  { name: 'قطار', emoji: '🚂' },
-  { name: 'طائرة', emoji: '✈️' },
-  { name: 'دراجة نارية', emoji: '🏍️' },
-  { name: 'سفينة', emoji: '🚢' },
-  { name: 'إسعاف', emoji: '🚑' },
-  { name: 'مطافئ', emoji: '🚒' },
-  { name: 'هليكوبتر', emoji: '🚁' },
+const ANIMALS = [
+  { name: 'قطة', emoji: '🐈' },
+  { name: 'كلب', emoji: '🐕' },
+  { name: 'بقرة', emoji: '🐄' },
+  { name: 'أسد', emoji: '🦁' },
+  { name: 'خروف', emoji: '🐑' },
+  { name: 'حصان', emoji: '🐎' },
+  { name: 'ديك', emoji: '🐓' },
+  { name: 'فيل', emoji: '🐘' },
 ];
 
 const shuffleArray = <T,>(array: T[]): T[] => {
   return [...array].sort(() => Math.random() - 0.5);
 };
 
-const VehiclePicturesGame: React.FC<{ onBack: () => void }> = ({ onBack }) => {
-  const [targetVehicle, setTargetVehicle] = useState(VEHICLES[0]);
-  const [options, setOptions] = useState<typeof VEHICLES>([]);
+const AnimalPicturesGame: React.FC<{ onBack: () => void }> = ({ onBack }) => {
+  const [targetAnimal, setTargetAnimal] = useState(ANIMALS[0]);
+  const [options, setOptions] = useState<typeof ANIMALS>([]);
   const [feedback, setFeedback] = useState<'correct' | 'incorrect' | null>(null);
   const successAudioRef = useRef<HTMLAudioElement>(null);
   const failureAudioRef = useRef<HTMLAudioElement>(null);
 
   const generateNewRound = () => {
     setFeedback(null);
-    const shuffled = shuffleArray(VEHICLES);
+    const shuffled = shuffleArray(ANIMALS);
     const newTarget = shuffled[0];
-    setTargetVehicle(newTarget);
+    setTargetAnimal(newTarget);
 
     const otherOptions = shuffled.slice(1, 4);
     const allOptions = shuffleArray([newTarget, ...otherOptions]);
@@ -38,10 +38,10 @@ const VehiclePicturesGame: React.FC<{ onBack: () => void }> = ({ onBack }) => {
     generateNewRound();
   }, []);
 
-  const handleOptionClick = (vehicleName: string) => {
+  const handleOptionClick = (animalName: string) => {
     if (feedback) return;
 
-    if (vehicleName === targetVehicle.name) {
+    if (animalName === targetAnimal.name) {
       setFeedback('correct');
       successAudioRef.current?.play();
       setTimeout(() => {
@@ -56,8 +56,8 @@ const VehiclePicturesGame: React.FC<{ onBack: () => void }> = ({ onBack }) => {
     }
   };
   
-  const getButtonClass = (vehicleName: string): string => {
-      const isCorrectAnswer = vehicleName === targetVehicle.name;
+  const getButtonClass = (animalName: string): string => {
+      const isCorrectAnswer = animalName === targetAnimal.name;
       
       if (!feedback) {
           return "bg-slate-700 hover:bg-slate-600";
@@ -84,9 +84,9 @@ const VehiclePicturesGame: React.FC<{ onBack: () => void }> = ({ onBack }) => {
           <ArrowRightIcon className="w-6 h-6" />
           <span className="sr-only">رجوع</span>
       </button>
-      <h3 className="text-2xl font-bold mb-4">ما اسم هذه المركبة؟</h3>
+      <h3 className="text-2xl font-bold mb-4">ما هو اسم هذا الحيوان؟</h3>
       <div className="mb-6 flex items-center justify-center text-8xl h-28">
-        <span className="animate-bounce">{targetVehicle.emoji}</span>
+        <span className="animate-bounce">{targetAnimal.emoji}</span>
       </div>
       <div className="grid grid-cols-2 gap-4 max-w-sm mx-auto">
         {options.map((option) => (
@@ -106,4 +106,4 @@ const VehiclePicturesGame: React.FC<{ onBack: () => void }> = ({ onBack }) => {
   );
 };
 
-export default VehiclePicturesGame;
+export default AnimalPicturesGame;

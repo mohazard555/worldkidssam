@@ -1,33 +1,33 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { ArrowRightIcon } from './Icons';
 
-const VEHICLES = [
-  { name: 'سيارة', emoji: '🚗' },
-  { name: 'قطار', emoji: '🚂' },
-  { name: 'طائرة', emoji: '✈️' },
-  { name: 'دراجة نارية', emoji: '🏍️' },
-  { name: 'سفينة', emoji: '🚢' },
-  { name: 'إسعاف', emoji: '🚑' },
-  { name: 'مطافئ', emoji: '🚒' },
-  { name: 'هليكوبتر', emoji: '🚁' },
+const VEGETABLES = [
+  { name: 'جزر', emoji: '🥕' },
+  { name: 'بروكلي', emoji: '🥦' },
+  { name: 'طماطم', emoji: '🍅' },
+  { name: 'خيار', emoji: '🥒' },
+  { name: 'فلفل', emoji: '🌶️' },
+  { name: 'باذنجان', emoji: '🍆' },
+  { name: 'بطاطس', emoji: '🥔' },
+  { name: 'ذرة', emoji: '🌽' },
 ];
 
 const shuffleArray = <T,>(array: T[]): T[] => {
   return [...array].sort(() => Math.random() - 0.5);
 };
 
-const VehiclePicturesGame: React.FC<{ onBack: () => void }> = ({ onBack }) => {
-  const [targetVehicle, setTargetVehicle] = useState(VEHICLES[0]);
-  const [options, setOptions] = useState<typeof VEHICLES>([]);
+const VegetablesGame: React.FC<{ onBack: () => void }> = ({ onBack }) => {
+  const [target, setTarget] = useState(VEGETABLES[0]);
+  const [options, setOptions] = useState<typeof VEGETABLES>([]);
   const [feedback, setFeedback] = useState<'correct' | 'incorrect' | null>(null);
   const successAudioRef = useRef<HTMLAudioElement>(null);
   const failureAudioRef = useRef<HTMLAudioElement>(null);
 
   const generateNewRound = () => {
     setFeedback(null);
-    const shuffled = shuffleArray(VEHICLES);
+    const shuffled = shuffleArray(VEGETABLES);
     const newTarget = shuffled[0];
-    setTargetVehicle(newTarget);
+    setTarget(newTarget);
 
     const otherOptions = shuffled.slice(1, 4);
     const allOptions = shuffleArray([newTarget, ...otherOptions]);
@@ -38,43 +38,26 @@ const VehiclePicturesGame: React.FC<{ onBack: () => void }> = ({ onBack }) => {
     generateNewRound();
   }, []);
 
-  const handleOptionClick = (vehicleName: string) => {
+  const handleOptionClick = (name: string) => {
     if (feedback) return;
 
-    if (vehicleName === targetVehicle.name) {
+    if (name === target.name) {
       setFeedback('correct');
       successAudioRef.current?.play();
-      setTimeout(() => {
-        generateNewRound();
-      }, 1500);
+      setTimeout(generateNewRound, 1500);
     } else {
       setFeedback('incorrect');
       failureAudioRef.current?.play();
-      setTimeout(() => {
-        setFeedback(null);
-      }, 1000);
+      setTimeout(() => setFeedback(null), 1000);
     }
   };
   
-  const getButtonClass = (vehicleName: string): string => {
-      const isCorrectAnswer = vehicleName === targetVehicle.name;
-      
-      if (!feedback) {
-          return "bg-slate-700 hover:bg-slate-600";
-      }
-
-      if (feedback === 'correct' && isCorrectAnswer) {
-          return "bg-green-600 animate-pulse";
-      }
-      
-      if (feedback === 'incorrect' && isCorrectAnswer) {
-          return "bg-green-600";
-      }
-
-      if (feedback === 'incorrect' && !isCorrectAnswer) {
-          return "bg-red-600";
-      }
-      
+  const getButtonClass = (name: string): string => {
+      const isCorrectAnswer = name === target.name;
+      if (!feedback) return "bg-slate-700 hover:bg-slate-600";
+      if (feedback === 'correct' && isCorrectAnswer) return "bg-green-600 animate-pulse";
+      if (feedback === 'incorrect' && isCorrectAnswer) return "bg-green-600";
+      if (feedback === 'incorrect' && !isCorrectAnswer) return "bg-red-600";
       return "bg-slate-700 opacity-50";
   };
 
@@ -84,9 +67,9 @@ const VehiclePicturesGame: React.FC<{ onBack: () => void }> = ({ onBack }) => {
           <ArrowRightIcon className="w-6 h-6" />
           <span className="sr-only">رجوع</span>
       </button>
-      <h3 className="text-2xl font-bold mb-4">ما اسم هذه المركبة؟</h3>
+      <h3 className="text-2xl font-bold mb-4">ما اسم هذا الخضار؟</h3>
       <div className="mb-6 flex items-center justify-center text-8xl h-28">
-        <span className="animate-bounce">{targetVehicle.emoji}</span>
+        <span className="animate-bounce">{target.emoji}</span>
       </div>
       <div className="grid grid-cols-2 gap-4 max-w-sm mx-auto">
         {options.map((option) => (
@@ -106,4 +89,4 @@ const VehiclePicturesGame: React.FC<{ onBack: () => void }> = ({ onBack }) => {
   );
 };
 
-export default VehiclePicturesGame;
+export default VegetablesGame;

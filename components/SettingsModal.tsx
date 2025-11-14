@@ -1,5 +1,4 @@
 import React, { useState, useContext, ChangeEvent, useRef } from 'react';
-import { GoogleGenAI, Type } from "@google/genai";
 import { AppData, AppSettings, Story, StoryPage, Advertisement, QuizQuestion, ColoringPage, Drawing, FunFact, AnimalFlashcard, ColorFlashcard, NumberFlashcard, ShapeFlashcard, FunnyFlashcard, AlphabetFlashcard, EnglishWordFlashcard } from '../types';
 import { AppContext } from '../App';
 import { CloseIcon, SettingsIcon, BookIcon, GiftIcon, SyncIcon, TrashIcon, EditIcon, PlusIcon, MusicIcon, SparkleIcon, QuestionIcon, PaletteIcon, PuzzleIcon, LightbulbIcon, AbcIcon, AbcEnIcon } from './Icons';
@@ -20,11 +19,6 @@ const SettingsModal: React.FC<{ onClose: () => void; initialTab?: Tab }> = ({ on
   const [localData, setLocalData] = useState<AppData>(JSON.parse(JSON.stringify(appData)));
   const [activeTab, setActiveTab] = useState<Tab>(initialTab);
   const importFileRef = useRef<HTMLInputElement>(null);
-
-  // AI Story Generation State
-  const [isGenerating, setIsGenerating] = useState(false);
-  const [aiStoryPrompt, setAiStoryPrompt] = useState('');
-  const [showAiForm, setShowAiForm] = useState(false);
 
   const handleSave = () => {
     setAppData(localData);
@@ -116,89 +110,7 @@ const SettingsModal: React.FC<{ onClose: () => void; initialTab?: Tab }> = ({ on
       ),
     }));
   };
-  const handleGenerateStory = async () => {
-    if (!aiStoryPrompt) return;
-    setIsGenerating(true);
-    try {
-        const ai = new GoogleGenAI({ apiKey: process.env.API_KEY! });
-        
-        // 1. Generate story text and image prompts
-        const textPrompt = `Write a short, simple children's story in Arabic based on this theme: '${aiStoryPrompt}'. The story should be suitable for children aged 3-6. Break the story into exactly 4 pages. For each page, provide a short paragraph of text (1-2 simple sentences) and a simple, descriptive prompt for an image generation model to create an illustration. The image prompt should describe a colorful, friendly, and cute cartoon-style scene. Return the response as a JSON object with a 'title' (in Arabic) and a 'pages' array. Each page object in the array should have 'text' (in Arabic) and 'image_prompt' (in English) fields.`;
-        
-        const responseSchema = {
-            type: Type.OBJECT,
-            properties: {
-                title: { type: Type.STRING },
-                pages: {
-                    type: Type.ARRAY,
-                    items: {
-                        type: Type.OBJECT,
-                        properties: {
-                            text: { type: Type.STRING },
-                            image_prompt: { type: Type.STRING }
-                        },
-                         required: ['text', 'image_prompt']
-                    }
-                }
-            },
-            required: ['title', 'pages']
-        };
-
-        const textResponse = await ai.models.generateContent({
-            model: 'gemini-2.5-pro',
-            contents: textPrompt,
-            config: {
-                responseMimeType: "application/json",
-                responseSchema,
-            },
-        });
-        
-        const storyData = JSON.parse(textResponse.text.trim());
-
-        const newStoryPages: StoryPage[] = [];
-
-        // 2. Generate images for each page
-        for (const page of storyData.pages) {
-            const imageResponse = await ai.models.generateImages({
-                model: 'imagen-4.0-generate-001',
-                prompt: `${page.image_prompt}, cute children's book illustration, simple background, vibrant colors, friendly characters`,
-                config: {
-                  numberOfImages: 1,
-                  outputMimeType: 'image/png',
-                  aspectRatio: '4:3',
-                },
-            });
-            
-            const base64ImageBytes = imageResponse.generatedImages[0].image.imageBytes;
-            const imageUrl = `data:image/png;base64,${base64ImageBytes}`;
-            
-            newStoryPages.push({
-                text: page.text,
-                imageUrl: imageUrl,
-            });
-        }
-        
-        // 3. Create and add the new story
-        const newStory: Story = {
-            id: `story-${Date.now()}`,
-            title: storyData.title,
-            thumbnailUrl: newStoryPages[0]?.imageUrl || '', // Use first page image as thumbnail
-            pages: newStoryPages,
-            isNew: true,
-        };
-        
-        setLocalData(prev => ({ ...prev, stories: [newStory, ...prev.stories] }));
-        setShowAiForm(false);
-        setAiStoryPrompt('');
-
-    } catch (error) {
-        console.error("Error generating AI story:", error);
-        alert("حدث خطأ أثناء إنشاء القصة. الرجاء المحاولة مرة أخرى.");
-    } finally {
-        setIsGenerating(false);
-    }
-  };
-
+  
 
   // Ad Handlers
     const handleAddAd = () => {
@@ -711,44 +623,11 @@ const handleDeletePuzzleImage = (pageId: string) => {
             <div className="space-y-4">
                 <div className="flex justify-between items-center">
                     <h3 className="text-xl font-bold text-slate-700">إدارة القصص</h3>
-                    <div className="flex gap-2">
-                        <button onClick={() => setShowAiForm(s => !s)} className="flex items-center space-x-2 space-x-reverse bg-purple-500 text-white font-bold py-2 px-4 rounded-full hover:bg-purple-600 transition-all shadow-md">
-                            <SparkleIcon className="w-5 h-5"/>
-                            <span>إنشاء بالذكاء الاصطناعي</span>
-                        </button>
-                        <button onClick={handleAddStory} className="flex items-center space-x-2 space-x-reverse bg-green-500 text-white font-bold py-2 px-4 rounded-full hover:bg-green-600 transition-all shadow-md">
-                            <PlusIcon className="w-5 h-5"/>
-                            <span>إضافة قصة</span>
-                        </button>
-                    </div>
+                    <button onClick={handleAddStory} className="flex items-center space-x-2 space-x-reverse bg-green-500 text-white font-bold py-2 px-4 rounded-full hover:bg-green-600 transition-all shadow-md">
+                        <PlusIcon className="w-5 h-5"/>
+                        <span>إضافة قصة</span>
+                    </button>
                 </div>
-                 {showAiForm && (
-                    <div className="bg-purple-100 p-4 rounded-xl border-2 border-purple-200 space-y-2 animate-fade-in">
-                        <h4 className="font-bold text-purple-800">إنشاء قصة جديدة بالذكاء الاصطناعي</h4>
-                        <p className="text-sm text-purple-700">اكتب فكرة بسيطة لقصة (مثال: قطة صغيرة تبحث عن أمها)، وسيقوم الذكاء الاصطناعي بكتابة القصة ورسم صورها.</p>
-                        <textarea 
-                            value={aiStoryPrompt}
-                            onChange={(e) => setAiStoryPrompt(e.target.value)}
-                            placeholder="فكرة القصة..."
-                            className="w-full px-3 py-2 bg-white border border-purple-300 rounded-lg"
-                            rows={2}
-                            disabled={isGenerating}
-                        />
-                        <button onClick={handleGenerateStory} disabled={isGenerating || !aiStoryPrompt} className="w-full bg-purple-600 text-white font-bold py-2 px-4 rounded-full hover:bg-purple-700 disabled:bg-purple-300 flex items-center justify-center transition-colors">
-                            {isGenerating ? (
-                                <>
-                                    <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                    </svg>
-                                    جاري إنشاء القصة... قد يستغرق هذا بضع دقائق...
-                                </>
-                            ) : (
-                                "أنشئ القصة!"
-                            )}
-                        </button>
-                    </div>
-                )}
                 <div className="space-y-4 max-h-[400px] overflow-y-auto pr-2">
                     {localData.stories.map(story => (
                         <details key={story.id} className="bg-blue-100 p-3 rounded-xl border-2 border-blue-200">

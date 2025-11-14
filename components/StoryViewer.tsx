@@ -66,6 +66,24 @@ const StoryViewer: React.FC<StoryViewerProps> = ({ story, onClose }) => {
     playSound();
   };
 
+  if (!story.pages || story.pages.length === 0) {
+    return (
+      <div className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50 p-4">
+        <div className="relative bg-white rounded-2xl shadow-2xl p-8 text-center">
+          <button
+            onClick={onClose}
+            className="absolute top-2 right-2 text-slate-600 bg-slate-200 rounded-full p-2 hover:bg-red-500 hover:text-white transition-all z-20"
+            aria-label="إغلاق"
+          >
+            <CloseIcon className="w-6 h-6" />
+          </button>
+          <h2 className="text-2xl font-bold text-slate-800">لا توجد صفحات</h2>
+          <p className="text-slate-600 mt-2">هذه القصة لا تحتوي على أي صور. الرجاء إضافة صور من لوحة التحكم.</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50 p-4">
       <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-4xl aspect-[4/3] flex flex-col items-center justify-center p-2">

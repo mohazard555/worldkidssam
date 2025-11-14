@@ -95,7 +95,7 @@ export const SearchIcon: React.FC<{ className?: string }> = ({ className }) => (
 );
 
 export const YoutubeIcon: React.FC<{ className?: string }> = ({ className }) => (
-    <svg className={className} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M10 15l5.19-3L10 9v6m11.56-7.83c.13.47.22 1.1.28 1.9.07.8.1 1.49.1 2.09L22 12c0 2.19-.16 3.8-.44 4.83-.25.9-.83 1.48-1.73 1.73-.47.13-1.1.22-1.9.28-.8.07-1.49.1-2.09.1L15 19c-2.19 0-3.8-.16-4.83-.44-.9-.25-1.48-.83-1.73-1.73-.13-.47-.22-1.1-.28-1.9-.07-.8-.1-1.49-.1-2.09L8 12c0-2.19.16-3.8.44-4.83.25-.9.83-1.48 1.73-1.73.47-.13 1.1-.22 1.9-.28.8-.07 1.49-.1 2.09-.1L15 5c2.19 0 3.8.16 4.83.44.9.25 1.48.83 1.73 1.73z"/></svg>
+    <svg className={className} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M10 15l5.19-3L10 9v6m11.56-7.83c.13.47.22 1.1.28 1.9.07.8.1 1.49.1 2.09L22 12c0 2.19-.16 3.8-.44 4.83-.25.9-.83 1.48-1.73 1.73-.47.13-1.1.22-1.9.28-.8.07-1.49.1-2.09.1L15 19c-2.19 0-3.8-.16-4.83-.44-.9-.25-1.48-.83-1.73-1.73-.13-.47-.22-1.1-.28-1.9-.07-.8-.1-1.49-.1-2.09L8 12c0-2.19.16-3.8.44-4.83.25-.9.83 1.48 1.73-1.73.47-.13 1.1-.22 1.9-.28.8-.07 1.49-.1 2.09-.1L15 5c2.19 0 3.8.16 4.83.44.9.25 1.48.83 1.73 1.73z"/></svg>
 );
 
 export const QuestionIcon: React.FC<{ className?: string }> = ({ className }) => (
@@ -201,10 +201,6 @@ export const DesignCharacterIcon: React.FC<{ className?: string }> = ({ classNam
     <svg className={className} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
 );
 
-export const BuildHouseIcon: React.FC<{ className?: string }> = ({ className }) => (
-    <svg className={className} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3L2 12h3v8h14v-8h3L12 3zm0 13.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/></svg>
-);
-
 export const FindLetterIcon: React.FC<{ className?: string }> = ({ className }) => (
     <svg className={className} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
         <path d="M20.49 19l-4.99-5h.01c.97-1.13 1.5-2.58 1.5-4.13C17.01 5.42 13.58 2 9.51 2S2.01 5.42 2.01 9.87c0 4.45 3.43 8.12 7.5 8.12 1.48 0 2.85-.43 4-1.15l4.98 4.98c.29.29.77.29 1.06 0l.94-.94c.29-.29.29-.77 0-1.06zM9.51 16c-3.31 0-6-2.69-6-6s2.69-6 6-6 6 2.69 6 6-2.69 6-6 6z"/>
@@ -226,10 +222,38 @@ export const BodyPartsIcon: React.FC<{ className?: string }> = ({ className }) =
     <svg className={className} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm9 7h-5v12c0 .55-.45 1-1 1s-1-.45-1-1v-5h-4v5c0 .55-.45 1-1 1s-1-.45-1-1V9H3c-.55 0-1-.45-1-1s.45-1 1-1h18c.55 0 1 .45 1 1s-.45 1-1 1z"/></svg>
 );
 
-export const BlockBuildingIcon: React.FC<{ className?: string }> = ({ className }) => (
-    <svg className={className} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M21 6H3c-1.1 0-2 .9-2 2v8c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zM7 14H5v-4h2v4zm4 0H9v-4h2v4zm4 0h-2v-4h2v4zm4 0h-2v-4h2v4z"/></svg>
-);
-
 export const CompleteWordIcon: React.FC<{ className?: string }> = ({ className }) => (
     <svg className={className} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M4 6h16v2H4zm0 5h10v2H4zm0 5h16v2H4zm12-5h4v2h-4z"/></svg>
+);
+
+export const ConnectDotsIcon: React.FC<{ className?: string }> = ({ className }) => (
+    <svg className={className} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M16,13.5L11,15L9.5,13L15,10.5L16,13.5M16.5,12A2.5,2.5 0 0,0 19,9.5A2.5,2.5 0 0,0 16.5,7A2.5,2.5 0 0,0 14,9.5A2.5,2.5 0 0,0 16.5,12M9,5A2,2 0 0,0 7,7A2,2 0 0,0 9,9A2,2 0 0,0 11,7A2,2 0 0,0 9,5M9.5,14A1.5,1.5 0 0,0 8,15.5A1.5,1.5 0 0,0 9.5,17A1.5,1.5 0 0,0 11,15.5A1.5,1.5 0 0,0 9.5,14Z" />
+    </svg>
+);
+
+export const BrainIcon: React.FC<{ className?: string }> = ({ className }) => (
+    <svg className={className} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M12,2C9.25,2 7,4.25 7,7C7,8.65 7.82,10.12 9.05,11.08C7.39,11.53 6,12.83 6,14.5V16H8V14.5C8,13.67 8.67,13 9.5,13H14.5C15.33,13 16,13.67 16,14.5V16H18V14.5C18,12.83 16.61,11.53 14.95,11.08C16.18,10.12 17,8.65 17,7C17,4.25 14.75,2 12,2Z" />
+    </svg>
+);
+
+export const FruitIcon: React.FC<{ className?: string }> = ({ className }) => (
+    <svg className={className} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M19.5 12.5c0-2.42-1.72-4.44-4-4.9V4h-3v3.25A5.02 5.02 0 0 0 8.5 12.5c0 2.76 2.24 5 5 5s5-2.24 5-5zm-9 0c0-1.65 1.35-3 3-3s3 1.35 3 3-1.35 3-3 3-3-1.35-3-3zM10 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/></svg>
+);
+
+export const VegetableIcon: React.FC<{ className?: string }> = ({ className }) => (
+    <svg className={className} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M17 8C8 10 5.9 16.17 3.82 21.34l1.89-.66C7.94 16.2 12.19 13.5 17 13V8z"/><path d="M21 21.18c-1.35-3.07-4.14-7.5-9-9.18V8c4.81-1.5 7.6-5.93 9-9h-2c-1.28 3.53-4.07 6.42-7 7.93V3h-2v12c5 2 8 8 9 11.18h2z"/></svg>
+);
+
+export const JobIcon: React.FC<{ className?: string }> = ({ className }) => (
+    <svg className={className} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M20 6h-4V4c0-1.11-.89-2-2-2h-4c-1.11 0-2 .89-2 2v2H4c-1.11 0-1.99.89-1.99 2L2 19c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V8c0-1.11-.89-2-2-2zm-6 0h-4V4h4v2z"/></svg>
+);
+
+export const SportIcon: React.FC<{ className?: string }> = ({ className }) => (
+    <svg className={className} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M19 4h-4.18C14.4 2.84 13.3 2 12 2s-2.4.84-2.82 2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm-7 0c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm-2 10l-2-2 1.41-1.41L10 13.17l4.59-4.58L16 10l-6 6z"/></svg>
+);
+
+export const FoodIcon: React.FC<{ className?: string }> = ({ className }) => (
+    <svg className={className} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M11 9H9V2H7v7H5V2H3v7c0 2.12 1.66 3.84 3.75 3.97V22h2.5v-9.03C11.34 12.84 13 11.12 13 9V2h-2v7zm5-3v8h2.5v8H21V2c-2.76 0-5 2.24-5 4z"/></svg>
 );
