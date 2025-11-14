@@ -22,6 +22,7 @@ const AnimalSoundsGame: React.FC<{ onBack: () => void }> = ({ onBack }) => {
   const [feedback, setFeedback] = useState<'correct' | 'incorrect' | null>(null);
   const successAudioRef = useRef<HTMLAudioElement>(null);
   const failureAudioRef = useRef<HTMLAudioElement>(null);
+  const animalSoundRef = useRef<HTMLAudioElement>(null);
 
   const generateNewRound = () => {
     setFeedback(null);
@@ -35,9 +36,9 @@ const AnimalSoundsGame: React.FC<{ onBack: () => void }> = ({ onBack }) => {
   };
   
   const playSound = () => {
-      if (targetAnimal) {
-          const audio = new Audio(targetAnimal.soundUrl);
-          audio.play().catch(e => console.error("Animal sound play failed:", e));
+      if (targetAnimal && animalSoundRef.current) {
+          animalSoundRef.current.src = targetAnimal.soundUrl;
+          animalSoundRef.current.play().catch(e => console.error("Animal sound play failed:", e));
       }
   };
 
@@ -120,6 +121,7 @@ const AnimalSoundsGame: React.FC<{ onBack: () => void }> = ({ onBack }) => {
           </button>
         ))}
       </div>
+      <audio ref={animalSoundRef} preload="auto" />
       <audio ref={successAudioRef} src="https://actions.google.com/sounds/v1/positive/success.ogg" preload="auto" />
       <audio ref={failureAudioRef} src="https://actions.google.com/sounds/v1/errors/error_swoosh.ogg" preload="auto" />
     </div>

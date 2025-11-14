@@ -74,48 +74,60 @@ const ColoringCanvas: React.FC<{ image: ColoringPage; onBack: () => void; }> = (
   };
 
   const floodFill = (ctx: CanvasRenderingContext2D, startX: number, startY: number, fillColor: [number, number, number, number]) => {
-    const imageData = ctx.getImageData(0, 0, ctx.canvas.width, ctx.canvas.height);
-    const data = imageData.data;
-    const canvasWidth = ctx.canvas.width;
+      const canvas = ctx.canvas;
+      const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      const data = imageData.data;
+      const canvasWidth = canvas.width;
+      const canvasHeight = canvas.height;
 
-    const getPixelPos = (x: number, y: number) => (y * canvasWidth + x) * 4;
-    
-    const startPos = getPixelPos(startX, startY);
-    const startR = data[startPos];
-    const startG = data[startPos + 1];
-    const startB = data[startPos + 2];
-    
-    if (startR === fillColor[0] && startG === fillColor[1] && startB === fillColor[2]) {
-        return; // Clicked on already filled area
-    }
-    
-    // Don't fill dark lines. Tolerance allows for anti-aliasing.
-    if (startR < 128 && startG < 128 && startB < 128) {
-        return;
-    }
+      const getPixelIndex = (x: number, y: number) => (y * canvasWidth + x) * 4;
 
-    const pixelStack = [[startX, startY]];
-    
-    while (pixelStack.length > 0) {
-      const [x, y] = pixelStack.pop()!;
-      const currentPos = getPixelPos(x, y);
+      const targetIndex = getPixelIndex(startX, startY);
+      const targetColor = [data[targetIndex], data[targetIndex + 1], data[targetIndex + 2]];
 
-      if (data[currentPos] === startR && data[currentPos+1] === startG && data[currentPos+2] === startB) {
-        // Color the pixel
-        data[currentPos] = fillColor[0];
-        data[currentPos + 1] = fillColor[1];
-        data[currentPos + 2] = fillColor[2];
-        data[currentPos + 3] = fillColor[3];
-
-        // Push neighbors to stack
-        if (x > 0) pixelStack.push([x - 1, y]);
-        if (x < canvasWidth - 1) pixelStack.push([x + 1, y]);
-        if (y > 0) pixelStack.push([x, y - 1]);
-        if (y < ctx.canvas.height - 1) pixelStack.push([x, y + 1]);
+      // If target color is same as fill color, do nothing
+      if (targetColor[0] === fillColor[0] && targetColor[1] === fillColor[1] && targetColor[2] === fillColor[2]) {
+          return;
       }
-    }
 
-    ctx.putImageData(imageData, 0, 0);
+      // If target is a line (dark color), do nothing
+      if (targetColor[0] < 50 && targetColor[1] < 50 && targetColor[2] < 50) {
+          return;
+      }
+
+      const queue: [number, number][] = [[startX, startY]];
+      const visited = new Set<string>();
+      visited.add(`${startX},${startY}`);
+
+      const isColorMatch = (r: number, g: number, b: number) => {
+          const tolerance = 20;
+          return Math.abs(r - targetColor[0]) <= tolerance &&
+                 Math.abs(g - targetColor[1]) <= tolerance &&
+                 Math.abs(b - targetColor[2]) <= tolerance;
+      };
+
+      while (queue.length > 0) {
+          const [x, y] = queue.shift()!;
+          const currentIndex = getPixelIndex(x, y);
+
+          data[currentIndex] = fillColor[0];
+          data[currentIndex + 1] = fillColor[1];
+          data[currentIndex + 2] = fillColor[2];
+          data[currentIndex + 3] = 255;
+
+          const neighbors = [[x + 1, y], [x - 1, y], [x, y + 1], [x, y - 1]];
+          for (const [nx, ny] of neighbors) {
+              const key = `${nx},${ny}`;
+              if (nx >= 0 && nx < canvasWidth && ny >= 0 && ny < canvasHeight && !visited.has(key)) {
+                  visited.add(key);
+                  const neighborIndex = getPixelIndex(nx, ny);
+                  if (isColorMatch(data[neighborIndex], data[neighborIndex + 1], data[neighborIndex + 2])) {
+                      queue.push([nx, ny]);
+                  }
+              }
+          }
+      }
+      ctx.putImageData(imageData, 0, 0);
   };
   
   const handleSave = () => {
