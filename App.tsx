@@ -191,12 +191,14 @@ const App: React.FC = () => {
 
     const handleStorySelect = (story: Story) => {
         const enabledAds = (appData.advertisements || []).filter(ad => ad.enabled);
+        setSelectedStory(story);
         if (enabledAds.length > 0) {
             const randomAd = enabledAds[Math.floor(Math.random() * enabledAds.length)];
             setActiveAd(randomAd);
+            setCurrentView('ad');
+        } else {
+            setCurrentView('story');
         }
-        setSelectedStory(story);
-        setCurrentView('ad');
     };
 
     const handleContinueFromAd = () => {

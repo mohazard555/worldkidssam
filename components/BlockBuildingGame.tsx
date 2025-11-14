@@ -21,8 +21,7 @@ const BlockBuildingGame: React.FC<{ onBack: () => void }> = ({ onBack }) => {
   const dropZoneRef = useRef<HTMLDivElement>(null);
 
   const handleDragStart = (e: React.DragEvent<HTMLDivElement>, piece: Piece) => {
-    e.dataTransfer.setData("pieceId", piece.id);
-    e.dataTransfer.setData("pieceColor", piece.color);
+    e.dataTransfer.setData("application/json", JSON.stringify(piece));
   };
 
   const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
@@ -31,9 +30,10 @@ const BlockBuildingGame: React.FC<{ onBack: () => void }> = ({ onBack }) => {
 
   const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
-    const pieceId = e.dataTransfer.getData("pieceId");
-    const pieceColor = e.dataTransfer.getData("pieceColor");
-    if (!pieceId || !dropZoneRef.current) return;
+    const pieceJSON = e.dataTransfer.getData("application/json");
+    if (!pieceJSON || !dropZoneRef.current) return;
+    
+    const piece = JSON.parse(pieceJSON) as Piece;
 
     const rect = dropZoneRef.current.getBoundingClientRect();
     // Snap to a grid for easier building
@@ -41,7 +41,7 @@ const BlockBuildingGame: React.FC<{ onBack: () => void }> = ({ onBack }) => {
     const x = Math.round((e.clientX - rect.left - gridSize / 2) / gridSize) * gridSize;
     const y = Math.round((e.clientY - rect.top - gridSize / 2) / gridSize) * gridSize;
 
-    setPlacedPieces(prev => [...prev, { id: `${pieceId}-${Date.now()}`, x, y, color: pieceColor }]);
+    setPlacedPieces(prev => [...prev, { id: `${piece.id}-${Date.now()}`, x, y, color: piece.color }]);
   };
   
   const resetGame = () => setPlacedPieces([]);
@@ -81,7 +81,7 @@ const BlockBuildingGame: React.FC<{ onBack: () => void }> = ({ onBack }) => {
           {placedPieces.map((piece) => (
             <div
               key={piece.id}
-              className="absolute w-10 h-10 rounded"
+              className="absolute w-10 h-10 rounded pointer-events-none"
               style={{ left: `${piece.x}px`, top: `${piece.y}px`, backgroundColor: piece.color }}
             />
           ))}

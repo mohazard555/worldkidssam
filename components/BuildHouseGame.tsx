@@ -14,11 +14,11 @@ const PIECES: Piece[] = [
 ];
 
 const BuildHouseGame: React.FC<{ onBack: () => void }> = ({ onBack }) => {
-  const [placedPieces, setPlacedPieces] = useState<Record<string, { x: number; y: number }>>({});
+  const [placedPieces, setPlacedPieces] = useState<({ id: string, emoji: string, x: number; y: number })[]>([]);
   const dropZoneRef = useRef<HTMLDivElement>(null);
 
   const handleDragStart = (e: React.DragEvent<HTMLDivElement>, piece: Piece) => {
-    e.dataTransfer.setData("pieceId", piece.id);
+    e.dataTransfer.setData("application/json", JSON.stringify(piece));
   };
 
   const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
@@ -27,17 +27,18 @@ const BuildHouseGame: React.FC<{ onBack: () => void }> = ({ onBack }) => {
 
   const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
-    const pieceId = e.dataTransfer.getData("pieceId");
-    if (!pieceId || !dropZoneRef.current) return;
+    const pieceJSON = e.dataTransfer.getData("application/json");
+    if (!pieceJSON || !dropZoneRef.current) return;
 
+    const piece = JSON.parse(pieceJSON) as Piece;
     const rect = dropZoneRef.current.getBoundingClientRect();
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
 
-    setPlacedPieces(prev => ({ ...prev, [pieceId]: { x, y } }));
+    setPlacedPieces(prev => [...prev, { ...piece, id: `${piece.id}-${Date.now()}`, x, y }]);
   };
   
-  const resetGame = () => setPlacedPieces({});
+  const resetGame = () => setPlacedPieces([]);
 
   return (
     <div className="bg-slate-800/50 p-4 rounded-lg relative animate-fade-in">
@@ -76,13 +77,13 @@ const BuildHouseGame: React.FC<{ onBack: () => void }> = ({ onBack }) => {
           {/* House Base */}
           <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-48 h-32 bg-[#d2b48c] border-4 border-[#8b4513]" />
           
-          {Object.entries(placedPieces).map(([id, pos]) => (
+          {placedPieces.map((p) => (
             <div
-              key={id}
-              className="absolute text-5xl"
-              style={{ left: `${(pos as { x: number; y: number }).x - 28}px`, top: `${(pos as { x: number; y: number }).y - 28}px` }}
+              key={p.id}
+              className="absolute text-5xl pointer-events-none"
+              style={{ left: `${p.x - 28}px`, top: `${p.y - 28}px` }}
             >
-              {PIECES.find(p => p.id === id)?.emoji}
+              {p.emoji}
             </div>
           ))}
         </div>
