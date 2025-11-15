@@ -474,31 +474,29 @@ const handleDeletePuzzleImage = (pageId: string) => {
     if (!localData.gist.rawUrl) { alert("الرجاء إدخال رابط Gist Raw URL"); return; }
 
     try {
-        // First save the rawUrl the user may have just entered
-        setAppData(prev => ({
-            ...prev,
-            gist: {
-                ...prev.gist,
-                rawUrl: localData.gist.rawUrl
-            }
-        }));
-
         const response = await fetch(localData.gist.rawUrl, { cache: 'no-store' });
         if (!response.ok) throw new Error(`خطأ في الشبكة: ${response.statusText}`);
         const dataFromGist = await response.json();
 
         if (window.confirm("تم جلب البيانات من Gist. هل تريد استبدال البيانات الحالية؟")) {
-            // Preserve the existing access token
-            const updatedData = {
+            const currentGistSettings = localData.gist;
+            
+            setLocalData(prev => ({
                 ...dataFromGist,
                 gist: {
                     ...dataFromGist.gist,
-                    rawUrl: localData.gist.rawUrl, // Ensure the URL we just used is saved
-                    accessToken: localData.gist.accessToken, // Keep the token from the browser
+                    rawUrl: currentGistSettings.rawUrl,
+                    accessToken: currentGistSettings.accessToken,
                 }
-            };
-            setLocalData(updatedData);
-            setAppData(updatedData); // Also save to local storage immediately
+            }));
+             setAppData(prev => ({
+                ...dataFromGist,
+                gist: {
+                    ...dataFromGist.gist,
+                    rawUrl: currentGistSettings.rawUrl,
+                    accessToken: currentGistSettings.accessToken,
+                }
+            }));
             alert("تم تحديث البيانات بنجاح!");
         }
     } catch (e) {
@@ -514,27 +512,25 @@ const handleDeletePuzzleImage = (pageId: string) => {
     if (!window.confirm("هل أنت متأكد من رغبتك في حفظ البيانات الحالية إلى Gist؟ سيتم الكتابة فوق المحتوى الحالي للملف.")) {
         return;
     }
-
-    // First, save the current data (including the new token) to local storage.
+    
     setAppData(localData);
 
-    // Create a copy of the data to be saved, but remove the access token for security.
     const dataToSave = JSON.parse(JSON.stringify(localData));
     if (dataToSave.gist) {
-        dataToSave.gist.accessToken = ''; // Do not save token to public Gist
+        dataToSave.gist.accessToken = ''; 
     }
 
     try {
         const response = await fetch(`https://api.github.com/gists/${gistId}`, {
             method: 'PATCH',
             headers: {
-                'Authorization': `token ${localData.gist.accessToken}`, // Use the real token for auth
+                'Authorization': `token ${localData.gist.accessToken}`,
                 'Accept': 'application/vnd.github.v3+json',
             },
             body: JSON.stringify({
                 files: {
                     [filename]: {
-                        content: JSON.stringify(dataToSave, null, 2) // Send the sanitized data
+                        content: JSON.stringify(dataToSave, null, 2)
                     }
                 }
             })
@@ -1066,50 +1062,65 @@ const handleDeletePuzzleImage = (pageId: string) => {
                 </div>
             </div>
         );
-        case 'sync': return (
-            <div className="space-y-4">
-                <h3 className="text-xl font-bold text-slate-700">المزامنة والنسخ الاحتياطي</h3>
-                <div className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 rounded-r-lg" role="alert">
-                    <p className="font-bold">ميزة متقدمة!</p>
-                    <p className="text-sm">يمكنك استخدام GitHub Gist لحفظ واستعادة بيانات تطبيقك. هذا مفيد للنسخ الاحتياطي أو المزامنة بين الأجهزة.</p>
-                </div>
-                <div>
-                    <label className="block text-sm font-bold text-gray-600 mb-1">رابط Gist Raw URL</label>
-                    <input type="text" name="rawUrl" value={localData.gist.rawUrl} onChange={handleGistChange} placeholder="https://gist.githubusercontent.com/user/id/raw/file.json" className="w-full px-4 py-2 bg-white text-black border-2 border-blue-200 rounded-full shadow-inner"/>
-                </div>
-                 <div>
-                    <label className="block text-sm font-bold text-gray-600 mb-1">GitHub Personal Access Token</label>
-                    <input type="password" name="accessToken" value={localData.gist.accessToken} onChange={handleGistChange} placeholder="أدخل التوكن الخاص بك هنا" className="w-full px-4 py-2 bg-white text-black border-2 border-blue-200 rounded-full shadow-inner"/>
-                    <p className="text-xs text-gray-500 mt-1">
-                        مطلوب فقط لحفظ البيانات. يجب أن يكون لديه صلاحية 'gist'.
-                        <a href="https://github.com/settings/tokens/new?scopes=gist" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline mr-1">إنشاء توكن جديد</a>
-                    </p>
-                </div>
+        case 'sync': 
+            const isGistUrlFixed = !!appData.gist.rawUrl;
+            return (
+                <div className="space-y-4">
+                    <h3 className="text-xl font-bold text-slate-700">المزامنة والنسخ الاحتياطي</h3>
+                    <div className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 rounded-r-lg" role="alert">
+                        <p className="font-bold">ميزة متقدمة!</p>
+                        <p className="text-sm">يمكنك استخدام GitHub Gist لحفظ واستعادة بيانات تطبيقك. هذا مفيد للنسخ الاحتياطي أو المزامنة بين الأجهزة.</p>
+                    </div>
+                    <div>
+                        <label className="block text-sm font-bold text-gray-600 mb-1">رابط Gist Raw URL</label>
+                        <input 
+                            type="text" 
+                            name="rawUrl" 
+                            value={localData.gist.rawUrl} 
+                            onChange={handleGistChange} 
+                            placeholder="https://gist.githubusercontent.com/user/id/raw/file.json" 
+                            className={`w-full px-4 py-2 border-2 border-blue-200 rounded-full shadow-inner ${isGistUrlFixed ? 'bg-gray-200 text-gray-500 cursor-not-allowed' : 'bg-white text-black'}`}
+                            disabled={isGistUrlFixed}
+                        />
+                         <p className="text-xs text-gray-500 mt-1">
+                            {isGistUrlFixed
+                                ? "يتم تحديد هذا الرابط تلقائيًا من الإعدادات المركزية للتطبيق لضمان المزامنة للجميع."
+                                : "أدخل رابط Gist Raw URL للمزامنة."}
+                        </p>
+                    </div>
+                    <div>
+                        <label className="block text-sm font-bold text-gray-600 mb-1">GitHub Personal Access Token</label>
+                        <input type="password" name="accessToken" value={localData.gist.accessToken} onChange={handleGistChange} placeholder="أدخل التوكن الخاص بك هنا" className="w-full px-4 py-2 bg-white text-black border-2 border-blue-200 rounded-full shadow-inner"/>
+                        <p className="text-xs text-gray-500 mt-1">
+                            مطلوب فقط لحفظ البيانات. يجب أن يكون لديه صلاحية 'gist'.
+                            <a href="https://github.com/settings/tokens/new?scopes=gist" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline mr-1">إنشاء توكن جديد</a>
+                        </p>
+                    </div>
 
-                <div className="bg-red-100 border-l-4 border-red-500 text-red-800 p-4 rounded-r-lg mt-4" role="alert">
-                    <p className="font-bold">ملاحظة حول خطأ "Bad credentials"</p>
-                    <ul className="text-sm list-disc list-inside mt-2">
-                        <li>إذا واجهت هذا الخطأ، فهذا يعني أن رمز الوصول (Token) الذي أدخلته غير صحيح أو انتهت صلاحيته.</li>
-                        <li>تأكد من أن الرمز الذي نسخته من GitHub صحيح تمامًا.</li>
-                        <li>تأكد من أن الرمز لديه صلاحية <code className="bg-red-200 p-1 rounded text-xs">gist</code> عند إنشائه.</li>
-                        <li>إذا استمرت المشكلة، قم بإنشاء رمز وصول جديد من الرابط أعلاه وجربه.</li>
-                        <li>رمز الوصول يُحفظ في متصفحك فقط ولا تتم مشاركته مع أي جهة أخرى.</li>
-                    </ul>
-                </div>
+                    <div className="bg-red-100 border-l-4 border-red-500 text-red-800 p-4 rounded-r-lg mt-4" role="alert">
+                        <p className="font-bold">ملاحظة حول خطأ "Bad credentials"</p>
+                        <ul className="text-sm list-disc list-inside mt-2">
+                            <li>إذا واجهت هذا الخطأ، فهذا يعني أن رمز الوصول (Token) الذي أدخلته غير صحيح أو انتهت صلاحيته.</li>
+                            <li>تأكد من أن الرمز الذي نسخته من GitHub صحيح تمامًا.</li>
+                            <li>تأكد من أن الرمز لديه صلاحية <code className="bg-red-200 p-1 rounded text-xs">gist</code> عند إنشائه.</li>
+                            <li>إذا استمرت المشكلة، قم بإنشاء رمز وصول جديد من الرابط أعلاه وجربه.</li>
+                            <li>رمز الوصول يُحفظ في متصفحك فقط ولا تتم مشاركته مع أي جهة أخرى.</li>
+                        </ul>
+                    </div>
 
-                <div className="flex space-x-2 space-x-reverse">
-                    <button onClick={handleSyncLoad} className="flex-1 bg-blue-500 text-white font-bold py-2 px-4 rounded-full hover:bg-blue-600">تحميل من Gist</button>
-                    <button onClick={handleSyncSave} className="flex-1 bg-green-500 text-white font-bold py-2 px-4 rounded-full hover:bg-green-600">حفظ إلى Gist</button>
+                    <div className="flex space-x-2 space-x-reverse">
+                        <button onClick={handleSyncLoad} className="flex-1 bg-blue-500 text-white font-bold py-2 px-4 rounded-full hover:bg-blue-600">تحميل من Gist</button>
+                        <button onClick={handleSyncSave} className="flex-1 bg-green-500 text-white font-bold py-2 px-4 rounded-full hover:bg-green-600">حفظ إلى Gist</button>
+                    </div>
+                    <hr/>
+                    <h3 className="text-lg font-bold text-slate-700 mt-4">استيراد وتصدير يدوي</h3>
+                    <div className="flex space-x-2 space-x-reverse">
+                        <button onClick={handleExport} className="flex-1 bg-gray-600 text-white font-bold py-2 px-4 rounded-full hover:bg-gray-700">تصدير البيانات</button>
+                        <button onClick={() => importFileRef.current?.click()} className="flex-1 bg-gray-600 text-white font-bold py-2 px-4 rounded-full hover:bg-gray-700">استيراد البيانات</button>
+                        <input type="file" ref={importFileRef} onChange={handleImport} accept=".json" className="hidden" />
+                    </div>
                 </div>
-                <hr/>
-                <h3 className="text-lg font-bold text-slate-700 mt-4">استيراد وتصدير يدوي</h3>
-                 <div className="flex space-x-2 space-x-reverse">
-                    <button onClick={handleExport} className="flex-1 bg-gray-600 text-white font-bold py-2 px-4 rounded-full hover:bg-gray-700">تصدير البيانات</button>
-                    <button onClick={() => importFileRef.current?.click()} className="flex-1 bg-gray-600 text-white font-bold py-2 px-4 rounded-full hover:bg-gray-700">استيراد البيانات</button>
-                    <input type="file" ref={importFileRef} onChange={handleImport} accept=".json" className="hidden" />
-                </div>
-            </div>
-        );
+            );
       }
   };
 
