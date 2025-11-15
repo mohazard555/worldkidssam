@@ -471,49 +471,79 @@ const handleDeletePuzzleImage = (pageId: string) => {
   }
 
   const handleSyncLoad = async () => {
-    if(!localData.gist.rawUrl) { alert("الرجاء إدخال رابط Gist Raw URL"); return; }
+    if (!localData.gist.rawUrl) { alert("الرجاء إدخال رابط Gist Raw URL"); return; }
+
     try {
+        // First save the rawUrl the user may have just entered
+        setAppData(prev => ({
+            ...prev,
+            gist: {
+                ...prev.gist,
+                rawUrl: localData.gist.rawUrl
+            }
+        }));
+
         const response = await fetch(localData.gist.rawUrl, { cache: 'no-store' });
-        if(!response.ok) throw new Error(`خطأ في الشبكة: ${response.statusText}`);
-        const data = await response.json();
+        if (!response.ok) throw new Error(`خطأ في الشبكة: ${response.statusText}`);
+        const dataFromGist = await response.json();
+
         if (window.confirm("تم جلب البيانات من Gist. هل تريد استبدال البيانات الحالية؟")) {
-          setLocalData(data);
-          alert("تم تحديث البيانات بنجاح!");
+            // Preserve the existing access token
+            const updatedData = {
+                ...dataFromGist,
+                gist: {
+                    ...dataFromGist.gist,
+                    rawUrl: localData.gist.rawUrl, // Ensure the URL we just used is saved
+                    accessToken: localData.gist.accessToken, // Keep the token from the browser
+                }
+            };
+            setLocalData(updatedData);
+            setAppData(updatedData); // Also save to local storage immediately
+            alert("تم تحديث البيانات بنجاح!");
         }
-    } catch(e) {
+    } catch (e) {
         alert(`فشل تحميل البيانات: ${e.message}`);
     }
   };
 
   const handleSyncSave = async () => {
-    if(!localData.gist.accessToken) { alert("الرجاء إدخال GitHub Personal Access Token"); return; }
+    if (!localData.gist.accessToken) { alert("الرجاء إدخال GitHub Personal Access Token"); return; }
     const { gistId, filename } = getGistIdAndFile();
-    if(!gistId || !filename) { alert("رابط Gist Raw URL غير صالح."); return; }
-    
-    if(!window.confirm("هل أنت متأكد من رغبتك في حفظ البيانات الحالية إلى Gist؟ سيتم الكتابة فوق المحتوى الحالي للملف.")){
+    if (!gistId || !filename) { alert("رابط Gist Raw URL غير صالح."); return; }
+
+    if (!window.confirm("هل أنت متأكد من رغبتك في حفظ البيانات الحالية إلى Gist؟ سيتم الكتابة فوق المحتوى الحالي للملف.")) {
         return;
+    }
+
+    // First, save the current data (including the new token) to local storage.
+    setAppData(localData);
+
+    // Create a copy of the data to be saved, but remove the access token for security.
+    const dataToSave = JSON.parse(JSON.stringify(localData));
+    if (dataToSave.gist) {
+        dataToSave.gist.accessToken = ''; // Do not save token to public Gist
     }
 
     try {
         const response = await fetch(`https://api.github.com/gists/${gistId}`, {
             method: 'PATCH',
             headers: {
-                'Authorization': `token ${localData.gist.accessToken}`,
+                'Authorization': `token ${localData.gist.accessToken}`, // Use the real token for auth
                 'Accept': 'application/vnd.github.v3+json',
             },
             body: JSON.stringify({
                 files: {
                     [filename]: {
-                        content: JSON.stringify(localData, null, 2)
+                        content: JSON.stringify(dataToSave, null, 2) // Send the sanitized data
                     }
                 }
             })
         });
-        if(!response.ok) {
+        if (!response.ok) {
             const errorData = await response.json();
             throw new Error(`خطأ في واجهة GitHub: ${errorData.message}`);
         }
-        alert("تم حفظ البيانات في Gist بنجاح!");
+        alert("تم حفظ البيانات في Gist بنجاح! تم حفظ إعداداتك الجديدة في المتصفح أيضاً.");
     } catch (e) {
         alert(`فشل حفظ البيانات: ${e.message}`);
     }
