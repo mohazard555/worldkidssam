@@ -10,6 +10,45 @@ interface VideoData {
     thumbnailUrl: string;
 }
 
+const LazyImage: React.FC<{ src: string; alt: string; className: string }> = ({ src, alt, className }) => {
+    const placeholderRef = useRef<HTMLDivElement>(null);
+    const [imageSrc, setImageSrc] = useState<string | null>(null);
+
+    useEffect(() => {
+        const observer = new IntersectionObserver(
+            (entries) => {
+                entries.forEach((entry) => {
+                    if (entry.isIntersecting) {
+                        setImageSrc(src);
+                        if (placeholderRef.current) {
+                            observer.unobserve(placeholderRef.current);
+                        }
+                    }
+                });
+            },
+            { rootMargin: '100px' } // Load images 100px before they enter viewport
+        );
+
+        if (placeholderRef.current) {
+            observer.observe(placeholderRef.current);
+        }
+
+        return () => {
+            if (placeholderRef.current) {
+                // eslint-disable-next-line react-hooks/exhaustive-deps
+                observer.unobserve(placeholderRef.current);
+            }
+        };
+    }, [src]);
+
+    if (!imageSrc) {
+        return <div ref={placeholderRef} className={`${className} bg-slate-700 animate-pulse`}></div>;
+    }
+
+    return <img src={imageSrc} alt={alt} className={className} />;
+};
+
+
 const YoutubeSection: React.FC = () => {
     const { appData } = useContext(AppContext)!;
     const [searchTerm, setSearchTerm] = useState('');
@@ -81,7 +120,7 @@ const YoutubeSection: React.FC = () => {
             };
             fetchVideoData();
         }
-    }, [urls]);
+    }, [urls, videoData.length]);
 
 
     const filteredVideos = useMemo(() => {
@@ -145,10 +184,10 @@ const YoutubeSection: React.FC = () => {
                         return (
                             <div key={video.videoId} className="bg-slate-800/80 rounded-2xl shadow-lg overflow-hidden group flex flex-col text-white transform transition-all duration-300 hover:scale-105 hover:-rotate-2 border-4 border-yellow-400 p-2">
                                 <div className="relative aspect-video overflow-hidden rounded-lg">
-                                    <img 
-                                        src={video.thumbnailUrl} 
-                                        alt={`Thumbnail for ${video.title}`} 
-                                        className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110" 
+                                    <LazyImage
+                                        src={video.thumbnailUrl}
+                                        alt={`Thumbnail for ${video.title}`}
+                                        className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
                                     />
                                     <div className="absolute inset-0 bg-black/20"></div>
                                 </div>

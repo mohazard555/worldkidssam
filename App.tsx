@@ -283,6 +283,20 @@ const App: React.FC = () => {
     }, []);
 
     useEffect(() => {
+        const audioEl = backgroundMusicRef.current;
+        if (audioEl && appData.settings.backgroundMusicUrl) {
+            // Try to play. It will be muted because of the initial state.
+            const playPromise = audioEl.play();
+            if (playPromise !== undefined) {
+                playPromise.catch(error => {
+                    // Autoplay was prevented. User will need to interact to start music.
+                    console.log("Music autoplay was prevented by the browser.");
+                });
+            }
+        }
+    }, [appData.settings.backgroundMusicUrl]);
+
+    useEffect(() => {
         if (backgroundMusicRef.current) {
             backgroundMusicRef.current.muted = isMuted;
             if(!isMuted) {
