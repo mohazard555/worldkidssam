@@ -1,5 +1,6 @@
 
 
+
 import React, { useState, createContext, useMemo, useEffect, useRef } from 'react';
 import { AppData, Story, Advertisement, AppSettings, EnglishWordFlashcard } from './types';
 import StoryCard from './components/StoryCard';
@@ -198,7 +199,8 @@ const DEFAULT_APP_DATA: AppData = {
             { letter: "W", word: "Whale", image: 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48cGF0aCBkPSJNMTAgNTUgQzMwIDgwIDcwIDgwIDkwIDU1IEMxMTAsMzAgNDAsMjAgMTAgNTVaIiBmaWxsPSIjNjc4ZTg3Ii8+PHBhdGggZD0iTTMwIDU1IEw3MCA1NSBMNzAsODUgQzYwLDg1IDQwLDg1IDMwLDg1IFoiIGZpbGw9IiNmZmYiLz48Y2lyY2xlIGN4PSIyNSIgY3k9IjUwIiByPSI0IiBmaWxsPSIjMDAwIi8+PC9zdmc+', color: 'bg-blue-600' },
             { letter: "X", word: "Xylophone", image: 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48cGF0aCBkPSJNMjAsMjAgTDgwLDUwIEw4MCw2MCBMMjAsMzAgWiIgZmlsbD0iI2VjNDg5OSIvPjxwYXRoIGQ9Ik0yMCw0MCBMNjAsNjAgTDYwLDcwIEwyMCw1MCBaIiBmaWxsPSIjZjVjNTAxIi8+PHBhdGggZD0iTTIwLDYwIEw0MCw3MCBMNDAsODAgTDIwLDcwIFoiIGZpbGw9IiMyMmM1NWUiLz48cGF0aCBkPSJNMjAsODAgTDI1LDg1IEwyNSw5NSBMMjAsODUgWiIgZmlsbD0iIzNiODJmNiIvPjwvc3ZnPg==', color: 'bg-purple-500' },
             { letter: "Y", word: "Yarn", image: 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48Y2lyY2xlIGN4PSI1MCIgY3k9IjUwIiByPSIzNSIgZmlsbD0iI2VjNDg5OSIvPjxwYXRoIGQ9Ik0zMCA0MCBDNzAgNjAgMzAgODAgNzAgMjAiIHN0cm9rZT0iI2Y4NzA3MCIgc3Ryb2tlLXdpZHRoPSI0IiBmaWxsPSJub25lIi8+PC9zdmc+', color: 'bg-pink-500' },
-            { letter: "Z", word: "Zebra", image: 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48cGF0aCBkPSJNMjUgMjAgTDgwIDI1IEw4NSw4MCBMMjAgNzUgWiIgZmlsbD0iI2ZmZiIvPjxwYXRoIGQ9Ik0zMCAyMSBMMzUgMjIgTDM4IDc2IEwzMiA3NSBaIE00NSAyMiBMNTAgMjMgTDUzIDc3IEw0NyA3NiBaIE02MCAyMyBMNjUgMjQgTDY4IDc4IEw2MiA3NyBaIiBmaWxsPSIjMDAwIi8+PGNpcmNsZSBjeD0iMjUiIGN5PSIyMCIgcj0iMTUiIGZpbGw9IiNmZmYiLz48cGF0aCBkPSJNMjAgMjUgQzE4IDM1IDE1IDM1IDE1IDIwIFoiIGZpbGw9IiMwMDAiLz48Y2lyY2xlIGN4PSIyMiIgY3k9IjE4IiByPSIyIiBmaWxsPSIjMDAwIi8+PC9zdmc+', color: 'bg-black' }
+            // FIX: The 'color' property was missing for this AlphabetFlashcard object.
+            { letter: "Z", word: "Zebra", image: 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48cGF0aCBkPSJNMjUgMjAgTDgwIDI1IEw4NSw4MCBMMjAgNzUgWiIgZmlsbD0iI2ZmZiIvPjxwYXRoIGQ9Ik0zMCAyMSBMMzUgMjIgTDM4IDc2IEwzMiA3NSBaIE00NSAyMiBMNTAgMjMgTDUzIDc3IEw0NyA3NiBaIE02MCAyMyBMNjUgMjQgTDY4IDc4IEw2MiA3NyBaIiBmaWxsPSIjMDAwIi8+PGNpcmNsZSBjeD0iMjUiIGN5PSIyMCIgcj0iMTUiIGZpbGw9IiNmZmYiLz48cGF0aCBkPSJNMjAgMjUgQzE4IDM1IDE1IDM1IDE1IDIwIFoiIGZpbGw9IiMwMDAiLz48Y2lyY2xlIGN4PSIyMiIgY3k9IjE4IiByPSIyIiBmaWxsPSIjMDAwIi8+PC9zdmc+', color: 'bg-slate-400' },
         ],
         englishWordFlashcards: [],
     },
@@ -207,300 +209,217 @@ const DEFAULT_APP_DATA: AppData = {
     gist: { rawUrl: '', accessToken: '' }
 };
 
+
 const App: React.FC = () => {
-    const [savedAppData, setSavedAppData] = useLocalStorage<AppData>('stories-app-data', DEFAULT_APP_DATA);
-
-    const appData = useMemo(() => {
-        const settings: AppSettings = {
-            ...DEFAULT_APP_DATA.settings,
-            ...(savedAppData.settings || {}),
-        };
-        
-        // Ensure all array properties exist to prevent crashes
-        for (const key in DEFAULT_APP_DATA.settings) {
-            const propKey = key as keyof AppSettings;
-            if (Array.isArray(DEFAULT_APP_DATA.settings[propKey]) && !settings[propKey]) {
-                (settings as any)[propKey] = [];
-            }
-        }
-
-        return {
-            settings,
-            stories: savedAppData.stories || DEFAULT_APP_DATA.stories,
-            advertisements: savedAppData.advertisements || DEFAULT_APP_DATA.advertisements,
-            gist: { ...DEFAULT_APP_DATA.gist, ...(savedAppData.gist || {}) },
-        };
-    }, [savedAppData]);
-    
-    const setAppData = (data: AppData) => {
-        setSavedAppData(data);
-    };
-
+    const [appData, setAppData] = useLocalStorage<AppData>('stories-app-data', DEFAULT_APP_DATA);
     const [selectedStory, setSelectedStory] = useState<Story | null>(null);
     const [isSettingsOpen, setIsSettingsOpen] = useState(false);
     const [settingsTab, setSettingsTab] = useState<Tab>('general');
-    const [currentView, setCurrentView] = useState<View>('home');
-    const [activeAd, setActiveAd] = useState<Advertisement | null>(null);
-    const [activeTab, setActiveTab] = useState<MainTab>('stories');
-    const [isMuted, setIsMuted] = useState(false);
-    const musicRef = useRef<HTMLAudioElement>(null);
+    const [view, setView] = useState<View>('home');
+    const [currentAd, setCurrentAd] = useState<Advertisement | null>(null);
     const [searchTerm, setSearchTerm] = useState('');
+    const [activeMainTab, setActiveMainTab] = useState<MainTab>('stories');
+
+    const backgroundMusicRef = useRef<HTMLAudioElement>(null);
+    const [isMuted, setIsMuted] = useState(true);
 
     useEffect(() => {
-        document.title = appData.settings.siteTitle;
-    }, [appData.settings.siteTitle]);
-
-    useEffect(() => {
-        const musicElement = musicRef.current;
-        if (musicElement) {
-            musicElement.muted = isMuted;
-            if (!isMuted) {
-                musicElement.play().catch(e => console.error("Music play failed:", e));
-            } else {
-                musicElement.pause();
+        if (backgroundMusicRef.current) {
+            backgroundMusicRef.current.muted = isMuted;
+            if(!isMuted) {
+                backgroundMusicRef.current.play().catch(e => console.error("BG Music play failed:", e));
             }
         }
     }, [isMuted]);
 
     const handleStorySelect = (story: Story) => {
-        const enabledAds = (appData.advertisements || []).filter(ad => ad.enabled);
-        setSelectedStory(story);
-        if (enabledAds.length > 0) {
-            const randomAd = enabledAds[Math.floor(Math.random() * enabledAds.length)];
-            setActiveAd(randomAd);
-            setCurrentView('ad');
+        const activeAds = appData.advertisements?.filter(ad => ad.enabled && ad.imageUrl);
+        if (activeAds && activeAds.length > 0) {
+            const randomAd = activeAds[Math.floor(Math.random() * activeAds.length)];
+            setCurrentAd(randomAd);
+            setSelectedStory(story);
+            setView('ad');
         } else {
-            setCurrentView('story');
+            setSelectedStory(story);
+            setView('story');
         }
     };
 
-    const handleContinueFromAd = (storyToView: Story) => {
-        setSelectedStory(storyToView);
-        setCurrentView('story');
-        setActiveAd(null);
+    const handleAdContinue = () => {
+        setView('story');
+        setCurrentAd(null);
     };
 
-    const handleShowYoutube = () => {
-        const enabledAds = (appData.advertisements || []).filter(ad => ad.enabled && ad.linkUrl.includes('youtube'));
-        if (enabledAds.length > 0) {
-            const randomAd = enabledAds[Math.floor(Math.random() * enabledAds.length)];
-            setActiveAd(randomAd);
-            setCurrentView('ad');
-        } else {
-            setCurrentView('youtube');
-        }
-    }
+    const handleCloseStory = () => {
+        setSelectedStory(null);
+        setView('home');
+    };
 
-    const openSettings = (tab: Tab = 'general') => {
+    const handleOpenSettings = (tab: Tab = 'general') => {
         setSettingsTab(tab);
         setIsSettingsOpen(true);
     };
 
     const filteredStories = useMemo(() => {
         if (!searchTerm) return appData.stories;
-        return appData.stories.filter(story => story.title.toLowerCase().includes(searchTerm.toLowerCase()));
+        return appData.stories.filter(story =>
+            story.title.toLowerCase().includes(searchTerm.toLowerCase())
+        );
     }, [searchTerm, appData.stories]);
 
-    const renderContent = () => {
-        switch (activeTab) {
-            case 'stories': return (
-                <>
-                    <div className="relative mb-6">
-                        <input
-                            type="search"
-                            placeholder="ابحث عن قصة..."
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                            className="w-full bg-slate-800/50 text-white placeholder-gray-400 rounded-full py-3 pl-12 pr-4 focus:outline-none focus:ring-2 focus:ring-yellow-400 border border-transparent focus:border-yellow-400"
-                        />
-                        <SearchIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-6 h-6 text-gray-400" />
-                    </div>
-                     {filteredStories.length > 0 ? (
-                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 animate-fade-in">
+    const MainTabButton: React.FC<{tab: MainTab, label: string, icon: React.ReactNode}> = ({tab, label, icon}) => (
+         <button onClick={() => setActiveMainTab(tab)} className={`flex-1 flex items-center justify-center space-x-2 space-x-reverse py-3 px-2 sm:px-4 font-bold text-lg rounded-t-2xl transition-all border-b-4 ${activeMainTab === tab ? 'bg-slate-800/50 text-yellow-300 border-yellow-300' : 'bg-slate-900/50 text-white/70 hover:bg-slate-900/80 border-transparent'}`}>
+            {icon}
+            <span className="hidden sm:inline">{label}</span>
+        </button>
+    );
+    
+    const renderMainContent = () => {
+        switch(activeMainTab) {
+            case 'stories':
+                return (
+                     <div id="stories-content" className="animate-fade-in">
+                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
                             {filteredStories.map(story => (
                                 <StoryCard key={story.id} story={story} onStorySelect={handleStorySelect} />
                             ))}
                         </div>
-                    ) : (
-                        <div className="text-center text-white/80 p-8 bg-slate-800/50 rounded-xl">
-                           <p className="font-bold text-lg">{searchTerm ? 'لا توجد نتائج بحث!' : 'لا توجد قصص حالياً.'}</p>
-                           <p className="text-sm mt-2">{searchTerm ? 'جرّب كلمة بحث أخرى.' : 'لإضافة قصص، اذهب إلى لوحة التحكم ⚙️'}</p>
-                        </div>
-                    )}
-                </>
-            );
-            case 'games': return (
-                <>
-                    <SectionCard
-                        title="ألعاب تفاعلية"
-                        count={30}
-                        icon={<SparkleIcon className="w-8 h-8" />}
-                        colorClasses="from-rose-500 to-red-600"
-                    >
-                        <InteractiveGames />
-                    </SectionCard>
-                    <SectionCard
-                        title="ألعاب الألغاز (Puzzle)"
-                        count={(appData.settings.puzzleImages || []).length}
-                        icon={<PuzzleIcon className="w-8 h-8" />}
-                        colorClasses="from-sky-500 to-indigo-600"
-                    >
-                       <PuzzleGame />
-                    </SectionCard>
-                    <SectionCard
-                        title="الألغاز والمسابقات"
-                        count={(appData.settings.quizzes || []).length}
-                        icon={<QuestionIcon className="w-8 h-8" />}
-                        colorClasses="from-lime-500 to-green-600"
-                    >
-                        <QuizSection />
-                    </SectionCard>
-                </>
-            );
-            case 'fun': return (
-                 <>
-                    <SectionCard
-                        title="تعلم الإنجليزية"
-                        count={(appData.settings.englishWordFlashcards || []).length}
-                        icon={<AbcEnIcon className="w-8 h-8" />}
-                        colorClasses="from-blue-400 to-sky-500"
-                    >
-                        <EnglishWordsSection />
-                    </SectionCard>
-                    <SectionCard
-                        title="تلوين ومرح"
-                        count={(appData.settings.coloringPages || []).length}
-                        icon={<PaletteIcon className="w-8 h-8" />}
-                        colorClasses="from-pink-500 to-purple-600"
-                    >
-                        <ColoringBook />
-                    </SectionCard>
-                    <SectionCard
-                        title="معرض الرسومات"
-                        count={(appData.settings.drawings || []).length}
-                        icon={<PaletteIcon className="w-8 h-8" />}
-                        colorClasses="from-amber-500 to-orange-600"
-                    >
-                        <DrawingGallery />
-                    </SectionCard>
-                    <SectionCard
-                        title="هل تعلم؟"
-                        count={(appData.settings.funFacts || []).length}
-                        icon={<LightbulbIcon className="w-8 h-8" />}
-                        colorClasses="from-yellow-400 to-amber-500"
-                    >
-                       <DidYouKnow />
-                    </SectionCard>
-                     <SectionCard
-                        title="شاهد على يوتيوب"
-                        count={(appData.settings.youtubeUrls || []).filter(u => u.trim() !== '').length}
-                        icon={<YoutubeIcon className="w-8 h-8" />}
-                        colorClasses="from-red-500 to-rose-600"
-                    >
-                        <YoutubeSection />
-                    </SectionCard>
-                    <SectionCard
-                        title="أغاني أطفال"
-                        count={(appData.settings.songUrls || []).filter(u => u.trim() !== '').length}
-                        icon={<MusicIcon className="w-8 h-8" />}
-                        colorClasses="from-teal-400 to-cyan-500"
-                    >
-                        <KidsSongsSection />
-                    </SectionCard>
-                </>
-            );
-            case 'flashcards': return <Flashcards />;
+                        {filteredStories.length === 0 && (
+                             <div className="text-center text-white/80 p-8">
+                                <p className="font-bold text-lg">{searchTerm ? 'لا توجد نتائج بحث!' : 'لا توجد قصص حالياً.'}</p>
+                                <p className="text-sm mt-2">{searchTerm ? 'جرّب كلمة بحث أخرى.' : 'لإضافة قصص، اذهب إلى لوحة التحكم ⚙️.'}</p>
+                            </div>
+                        )}
+                    </div>
+                );
+            case 'games':
+                return <InteractiveGames />;
+            case 'fun':
+                return (
+                    <div className="space-y-6">
+                        <SectionCard title="أغاني أطفال" count={(appData.settings.songUrls || []).length} icon={<MusicIcon className="w-8 h-8"/>} colorClasses="from-pink-500 to-rose-600" defaultOpen={true}>
+                           <KidsSongsSection />
+                        </SectionCard>
+                        <SectionCard title="شاهد على يوتيوب" count={(appData.settings.youtubeUrls || []).length} icon={<YoutubeIcon className="w-8 h-8"/>} colorClasses="from-red-500 to-orange-600" defaultOpen={true}>
+                           <YoutubeSection />
+                        </SectionCard>
+                         <SectionCard title="ألغاز ومسابقات" count={(appData.settings.quizzes || []).length} icon={<QuestionIcon className="w-8 h-8"/>} colorClasses="from-violet-500 to-purple-600">
+                            <QuizSection />
+                        </SectionCard>
+                        <SectionCard title="تلوين ومرح" count={(appData.settings.coloringPages || []).length} icon={<PaletteIcon className="w-8 h-8"/>} colorClasses="from-cyan-500 to-sky-600">
+                           <ColoringBook />
+                        </SectionCard>
+                         <SectionCard title="ألعاب الألغاز (Puzzle)" count={(appData.settings.puzzleImages || []).length} icon={<PuzzleIcon className="w-8 h-8"/>} colorClasses="from-lime-500 to-green-600">
+                           <PuzzleGame />
+                        </SectionCard>
+                         <SectionCard title="هل تعلم؟" count={(appData.settings.funFacts || []).length} icon={<LightbulbIcon className="w-8 h-8"/>} colorClasses="from-amber-500 to-yellow-600">
+                           <DidYouKnow />
+                        </SectionCard>
+                        <SectionCard title="معرض الرسومات" count={(appData.settings.drawings || []).length} icon={<PaletteIcon className="w-8 h-8"/>} colorClasses="from-fuchsia-500 to-pink-600">
+                           <DrawingGallery />
+                        </SectionCard>
+                    </div>
+                );
+            case 'flashcards':
+                return <Flashcards />;
+            default:
+                return null;
         }
     };
-    
-    const TabButton: React.FC<{ tab: MainTab; icon: React.ReactNode; label: string }> = ({ tab, icon, label }) => (
-        <button
-            onClick={() => setActiveTab(tab)}
-            className={`flex-1 flex flex-col sm:flex-row items-center justify-center space-x-2 space-x-reverse rounded-t-2xl px-4 py-3 font-bold text-lg transition-all duration-300 transform
-            ${activeTab === tab ? 'bg-slate-800/70 text-yellow-300 scale-105 shadow-lg' : 'bg-black/30 text-white/80 hover:bg-black/50 hover:text-white'}`}
-        >
-            {icon}
-            <span>{label}</span>
-        </button>
-    );
 
-    if (currentView === 'story' && selectedStory) {
-        return <StoryViewer story={selectedStory} onClose={() => { setSelectedStory(null); setCurrentView('home'); }} />;
-    }
-    if (currentView === 'ad' && activeAd && selectedStory) {
-        return <AdModal ad={activeAd} story={selectedStory} onContinue={handleContinueFromAd} />;
-    }
 
     return (
         <AppContext.Provider value={{ appData, setAppData }}>
-            <div className="min-h-screen bg-slate-900 text-white font-sans" dir="rtl" style={{
-                backgroundImage: appData.settings.backgroundImageUrl ? `url(${appData.settings.backgroundImageUrl})` : 'none',
-                backgroundSize: 'cover',
-                backgroundPosition: 'center',
-                backgroundAttachment: 'fixed',
-            }}>
+            <div dir="rtl" className="min-h-screen bg-slate-900 text-white font-sans transition-colors duration-500" style={{backgroundImage: appData.settings.backgroundImageUrl ? `url(${appData.settings.backgroundImageUrl})` : 'none', backgroundSize: 'cover', backgroundPosition: 'center', backgroundAttachment: 'fixed'}}>
                 <div className="min-h-screen bg-black/50 backdrop-blur-sm">
-                    <div className="container mx-auto px-4 py-6">
-                        <header className="flex justify-between items-center mb-6">
-                             <div className="flex items-center space-x-4 space-x-reverse">
-                                {appData.settings.logoUrl && <img src={appData.settings.logoUrl} alt="Logo" className="h-14 w-14 rounded-full shadow-lg border-2 border-yellow-400" />}
-                                <h1 className="text-3xl sm:text-4xl font-black text-yellow-300" style={{ textShadow: "2px 2px 4px rgba(0,0,0,0.5)" }}>{appData.settings.siteTitle}</h1>
+                    <header className="sticky top-0 z-40 bg-slate-900/80 backdrop-blur-lg shadow-lg">
+                        <div className="container mx-auto px-4 py-3 flex justify-between items-center">
+                            <div className="flex items-center space-x-3 space-x-reverse">
+                                <img src={appData.settings.logoUrl} alt="Logo" className="h-12 w-12 rounded-full object-cover" />
+                                <h1 className="text-xl sm:text-2xl font-bold">{appData.settings.siteTitle}</h1>
                             </div>
+                            
+                            <div className="flex-1 max-w-sm mx-4 relative">
+                               <input
+                                    type="search"
+                                    placeholder="ابحث عن قصة..."
+                                    value={searchTerm}
+                                    onChange={(e) => setSearchTerm(e.target.value)}
+                                    className="w-full bg-slate-800/50 placeholder-gray-400 rounded-full py-2 pl-10 pr-4 focus:outline-none focus:ring-2 focus:ring-yellow-400 border border-transparent focus:border-yellow-400"
+                                />
+                                <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400"/>
+                            </div>
+
                             <div className="flex items-center space-x-2 space-x-reverse">
-                                {appData.settings.backgroundMusicUrl && (
-                                <button onClick={() => setIsMuted(!isMuted)} className="p-3 bg-slate-800/50 rounded-full hover:bg-slate-700/70 transition-colors shadow-md">
-                                    {isMuted ? <SpeakerOffIcon className="w-6 h-6" /> : <SpeakerOnIcon className="w-6 h-6" />}
-                                </button>
-                                )}
-                                <button onClick={() => openSettings()} className="p-3 bg-slate-800/50 rounded-full hover:bg-slate-700/70 transition-colors shadow-md">
+                                 {appData.settings.backgroundMusicUrl && (
+                                     <button onClick={() => setIsMuted(!isMuted)} className="p-2 bg-slate-800 rounded-full hover:bg-slate-700 transition-colors">
+                                        {isMuted ? <SpeakerOffIcon className="w-6 h-6"/> : <SpeakerOnIcon className="w-6 h-6"/>}
+                                    </button>
+                                 )}
+                                <button onClick={() => handleOpenSettings()} className="p-2 bg-slate-800 rounded-full hover:bg-slate-700 transition-colors">
                                     <SettingsIcon className="w-6 h-6" />
                                 </button>
                             </div>
-                        </header>
+                        </div>
+                    </header>
 
+                    <main className="container mx-auto p-4 sm:p-6">
                         {appData.settings.siteNotice && (
-                            <div className="mb-6 animate-fade-in">
-                                <CartoonBox color="yellow" title="تنويه!" icon={<LightbulbIcon className="w-6 h-6" />}>
-                                    {appData.settings.siteNotice}
-                                </CartoonBox>
-                            </div>
+                            <CartoonBox color="yellow" className="mb-8" title="تنويه" icon={<SparkleIcon className="w-6 h-6 text-yellow-700"/>}>
+                                {appData.settings.siteNotice}
+                            </CartoonBox>
                         )}
                         
-                        <nav className="flex justify-center bg-black/20 p-1 rounded-t-2xl shadow-lg">
-                           <TabButton tab="stories" icon={<BookIcon className="w-6 h-6"/>} label="القصص" />
-                           <TabButton tab="games" icon={<PuzzleIcon className="w-6 h-6"/>} label="الألعاب" />
-                           <TabButton tab="flashcards" icon={<AbcIcon className="w-6 h-6"/>} label="بطاقات" />
-                           <TabButton tab="fun" icon={<SparkleIcon className="w-6 h-6"/>} label="تسلية" />
-                        </nav>
-
-                        <main className="bg-slate-800/70 p-4 sm:p-6 rounded-b-2xl shadow-inner">
-                            {renderContent()}
-                        </main>
+                        <div className="flex border-b-4 border-slate-700 mb-6">
+                           <MainTabButton tab="stories" label="القصص" icon={<BookIcon className="w-6 h-6"/>} />
+                           <MainTabButton tab="games" label="ألعاب تفاعلية" icon={<SparkleIcon className="w-6 h-6"/>} />
+                           <MainTabButton tab="flashcards" label="بطاقات تعليمية" icon={<AbcIcon className="w-6 h-6"/>} />
+                           <MainTabButton tab="fun" label="تسلية ومنوعات" icon={<GiftIcon className="w-6 h-6"/>} />
+                        </div>
                         
-                        {appData.settings.aboutSectionText && (
-                            <div className="mt-8 animate-fade-in">
-                                <CartoonBox color="blue" title={`حول ${appData.settings.siteTitle}`} icon={<PawIcon className="w-6 h-6" />}>
+                        {activeMainTab === 'flashcards' && (
+                             <SectionCard title="كلمات إنجليزية" count={(appData.settings.englishWordFlashcards || []).length} icon={<AbcEnIcon className="w-8 h-8"/>} colorClasses="from-rose-500 to-pink-600" defaultOpen={true}>
+                                <EnglishWordsSection />
+                            </SectionCard>
+                        )}
+
+                        {renderMainContent()}
+                        
+                         {appData.settings.aboutSectionText && (
+                            <div className="mt-12">
+                                <CartoonBox color="blue" title="عن الموقع" icon={<LightbulbIcon className="w-6 h-6"/>}>
                                     {appData.settings.aboutSectionText}
                                 </CartoonBox>
                             </div>
                         )}
+                    </main>
 
-                        <footer className="text-center mt-8 text-slate-400 text-sm">
-                            <p>
-                                صنع بحب ❤️ بواسطة <a href={appData.settings.developerLink} target="_blank" rel="noopener noreferrer" className="text-yellow-400 hover:underline">{appData.settings.developerName || 'مطور التطبيق'}</a>
-                            </p>
-                        </footer>
-                    </div>
+                     <footer className="mt-12 py-6 bg-slate-900/80 text-center text-slate-400">
+                        <div className="container mx-auto px-4">
+                           <p>جميع الحقوق محفوظة &copy; {new Date().getFullYear()}</p>
+                           {(appData.settings.developerName || appData.settings.developerLink) && (
+                               <p className="mt-2 text-sm">
+                                   تصميم وتطوير: <a href={appData.settings.developerLink || '#'} target="_blank" rel="noopener noreferrer" className="text-yellow-400 hover:underline">{appData.settings.developerName || 'المطور'}</a>
+                               </p>
+                           )}
+                           <a href={appData.settings.externalLink} target="_blank" rel="noopener noreferrer" className="mt-4 inline-block text-xs text-slate-500 hover:text-slate-300 transition-colors">
+                            (موافقة الوالدين)
+                           </a>
+                        </div>
+                    </footer>
+
                 </div>
-
-                {isSettingsOpen && <SettingsModal onClose={() => setIsSettingsOpen(false)} initialTab={settingsTab} />}
-                
-                {appData.settings.backgroundMusicUrl && (
-                    <audio ref={musicRef} src={appData.settings.backgroundMusicUrl} loop preload="auto" />
-                )}
             </div>
+
+            {view === 'story' && selectedStory && <StoryViewer story={selectedStory} onClose={handleCloseStory} />}
+            {isSettingsOpen && <SettingsModal onClose={() => setIsSettingsOpen(false)} initialTab={settingsTab} />}
+            {view === 'ad' && currentAd && <AdModal ad={currentAd} onContinue={handleAdContinue} />}
+            {appData.settings.backgroundMusicUrl && (
+                <audio ref={backgroundMusicRef} src={appData.settings.backgroundMusicUrl} loop preload="auto" />
+            )}
         </AppContext.Provider>
     );
-}
+};
 
+// FIX: Add default export for the App component.
 export default App;

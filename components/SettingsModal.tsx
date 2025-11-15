@@ -534,11 +534,11 @@ const handleDeletePuzzleImage = (pageId: string) => {
                 <h3 className="text-xl font-bold text-slate-700">الإعدادات العامة</h3>
                 <div>
                     <label className="block text-sm font-bold text-gray-600 mb-1">عنوان الموقع</label>
-                    <input type="text" name="siteTitle" value={localData.settings.siteTitle} onChange={handleSettingsChange} className="w-full px-4 py-2 bg-white border-2 border-blue-200 rounded-full shadow-inner focus:ring-yellow-400 focus:border-yellow-400" />
+                    <input type="text" name="siteTitle" value={localData.settings.siteTitle} onChange={handleSettingsChange} className="w-full px-4 py-2 bg-white text-black border-2 border-blue-200 rounded-full shadow-inner focus:ring-yellow-400 focus:border-yellow-400" />
                 </div>
                 <div>
                     <label className="block text-sm font-bold text-gray-600 mb-1">الرابط الخارجي (لموافقة الوالدين)</label>
-                    <input type="text" name="externalLink" value={localData.settings.externalLink} onChange={handleSettingsChange} className="w-full px-4 py-2 bg-white border-2 border-blue-200 rounded-full shadow-inner focus:ring-yellow-400 focus:border-yellow-400" />
+                    <input type="text" name="externalLink" value={localData.settings.externalLink} onChange={handleSettingsChange} className="w-full px-4 py-2 bg-white text-black border-2 border-blue-200 rounded-full shadow-inner focus:ring-yellow-400 focus:border-yellow-400" />
                 </div>
                  <div>
                     <label className="block text-sm font-bold text-gray-600 mb-1">تنويه الموقع</label>
@@ -547,7 +547,7 @@ const handleDeletePuzzleImage = (pageId: string) => {
                         value={localData.settings.siteNotice || ''} 
                         onChange={handleSettingsChange} 
                         rows={3} 
-                        className="w-full px-4 py-2 bg-white border-2 border-blue-200 rounded-2xl shadow-inner focus:ring-yellow-400 focus:border-yellow-400" 
+                        className="w-full px-4 py-2 bg-white text-black border-2 border-blue-200 rounded-2xl shadow-inner focus:ring-yellow-400 focus:border-yellow-400" 
                         placeholder="اكتب تنويهًا قصيرًا يظهر للأطفال في الصفحة الرئيسية..."
                     />
                     <p className="text-xs text-gray-500 mt-1">
@@ -561,7 +561,7 @@ const handleDeletePuzzleImage = (pageId: string) => {
                         value={localData.settings.aboutSectionText || ''} 
                         onChange={handleSettingsChange} 
                         rows={5} 
-                        className="w-full px-4 py-2 bg-white border-2 border-blue-200 rounded-2xl shadow-inner focus:ring-yellow-400 focus:border-yellow-400"
+                        className="w-full px-4 py-2 bg-white text-black border-2 border-blue-200 rounded-2xl shadow-inner focus:ring-yellow-400 focus:border-yellow-400"
                         placeholder="اكتب نبذة عن الموقع للأطفال..."
                     />
                     <p className="text-xs text-gray-500 mt-1">
@@ -585,14 +585,14 @@ const handleDeletePuzzleImage = (pageId: string) => {
                  </div>
                  <div>
                     <label className="block text-sm font-bold text-gray-600 mb-1">روابط يوتيوب (رابط بكل سطر)</label>
-                    <textarea name="youtubeUrls" value={(localData.settings.youtubeUrls || []).join('\n')} onChange={handleSettingsChange} rows={4} className="w-full px-4 py-2 bg-white border-2 border-blue-200 rounded-2xl shadow-inner focus:ring-yellow-400 focus:border-yellow-400" />
+                    <textarea name="youtubeUrls" value={(localData.settings.youtubeUrls || []).join('\n')} onChange={handleSettingsChange} rows={4} className="w-full px-4 py-2 bg-white text-black border-2 border-blue-200 rounded-2xl shadow-inner focus:ring-yellow-400 focus:border-yellow-400" />
                     <p className="text-xs text-gray-500 mt-1">
                         ستظهر هذه الفيديوهات كبطاقات في قسم "شاهد على يوتيوب". سيتم اختيار فيديو عشوائي أيضاً ليظهر قبل بدء القصة.
                     </p>
                  </div>
                  <div>
                     <label className="block text-sm font-bold text-gray-600 mb-1">روابط أغاني أطفال (رابط بكل سطر)</label>
-                    <textarea name="songUrls" value={(localData.settings.songUrls || []).join('\n')} onChange={handleSettingsChange} rows={4} className="w-full px-4 py-2 bg-white border-2 border-blue-200 rounded-2xl shadow-inner focus:ring-yellow-400 focus:border-yellow-400" />
+                    <textarea name="songUrls" value={(localData.settings.songUrls || []).join('\n')} onChange={handleSettingsChange} rows={4} className="w-full px-4 py-2 bg-white text-black border-2 border-blue-200 rounded-2xl shadow-inner focus:ring-yellow-400 focus:border-yellow-400" />
                     <p className="text-xs text-gray-500 mt-1">
                         ستظهر هذه الأغاني في قسم "أغاني أطفال" في تبويب التسلية.
                     </p>
@@ -611,11 +611,11 @@ const handleDeletePuzzleImage = (pageId: string) => {
                  <h3 className="text-lg font-bold text-slate-700 mt-4">معلومات المطور (تظهر بأسفل الصفحة)</h3>
                   <div>
                     <label className="block text-sm font-bold text-gray-600 mb-1">اسم المطور</label>
-                    <input type="text" name="developerName" value={localData.settings.developerName} onChange={handleSettingsChange} className="w-full px-4 py-2 bg-white border-2 border-blue-200 rounded-full shadow-inner focus:ring-yellow-400 focus:border-yellow-400" />
+                    <input type="text" name="developerName" value={localData.settings.developerName} onChange={handleSettingsChange} className="w-full px-4 py-2 bg-white text-black border-2 border-blue-200 rounded-full shadow-inner focus:ring-yellow-400 focus:border-yellow-400" />
                 </div>
                  <div>
                     <label className="block text-sm font-bold text-gray-600 mb-1">رابط المطور</label>
-                    <input type="text" name="developerLink" value={localData.settings.developerLink} onChange={handleSettingsChange} className="w-full px-4 py-2 bg-white border-2 border-blue-200 rounded-full shadow-inner focus:ring-yellow-400 focus:border-yellow-400" />
+                    <input type="text" name="developerLink" value={localData.settings.developerLink} onChange={handleSettingsChange} className="w-full px-4 py-2 bg-white text-black border-2 border-blue-200 rounded-full shadow-inner focus:ring-yellow-400 focus:border-yellow-400" />
                 </div>
             </div>
         );
@@ -700,15 +700,15 @@ const handleDeletePuzzleImage = (pageId: string) => {
                                 </div>
                                 <div>
                                     <label className="block text-sm font-bold text-gray-600 mb-1">العنوان</label>
-                                    <input type="text" name="title" value={ad.title} onChange={(e) => handleAdChange(ad.id, e)} className="w-full px-3 py-2 bg-white border border-blue-200 rounded-lg"/>
+                                    <input type="text" name="title" value={ad.title} onChange={(e) => handleAdChange(ad.id, e)} className="w-full px-3 py-2 bg-white text-black border border-blue-200 rounded-lg"/>
                                 </div>
                                 <div>
                                     <label className="block text-sm font-bold text-gray-600 mb-1">الوصف</label>
-                                    <textarea name="description" value={ad.description} onChange={(e) => handleAdChange(ad.id, e)} rows={2} className="w-full px-3 py-2 bg-white border border-blue-200 rounded-lg"/>
+                                    <textarea name="description" value={ad.description} onChange={(e) => handleAdChange(ad.id, e)} rows={2} className="w-full px-3 py-2 bg-white text-black border border-blue-200 rounded-lg"/>
                                 </div>
                                 <div>
                                     <label className="block text-sm font-bold text-gray-600 mb-1">الرابط (URL)</label>
-                                    <input type="text" name="linkUrl" value={ad.linkUrl} onChange={(e) => handleAdChange(ad.id, e)} className="w-full px-3 py-2 bg-white border border-blue-200 rounded-lg"/>
+                                    <input type="text" name="linkUrl" value={ad.linkUrl} onChange={(e) => handleAdChange(ad.id, e)} className="w-full px-3 py-2 bg-white text-black border border-blue-200 rounded-lg"/>
                                 </div>
                                 <div>
                                     <label className="block text-sm font-bold text-gray-600 mb-1">الصورة</label>
@@ -737,7 +737,7 @@ const handleDeletePuzzleImage = (pageId: string) => {
                         {(localData.settings.animalFlashcards || []).map((card, index) => (
                             <div key={index} className="flex items-center space-x-2 space-x-reverse bg-white p-2 rounded-lg">
                                 <img src={card.image} alt={card.name} className="w-12 h-12 bg-slate-200 rounded object-contain"/>
-                                <input type="text" value={card.name} onChange={(e) => handleFlashcardChange('animalFlashcards', index, 'name', e.target.value)} className="flex-grow px-2 py-1 border rounded"/>
+                                <input type="text" value={card.name} onChange={(e) => handleFlashcardChange('animalFlashcards', index, 'name', e.target.value)} className="flex-grow px-2 py-1 border rounded text-black"/>
                                 <input type="file" accept="image/*" onChange={(e) => handleFlashcardImageChange('animalFlashcards', index, e)} className="text-xs w-28"/>
                                 <button onClick={() => handleDeleteFlashcard('animalFlashcards', index)} className="p-1 text-red-500"><TrashIcon className="w-5 h-5"/></button>
                             </div>
@@ -755,7 +755,7 @@ const handleDeletePuzzleImage = (pageId: string) => {
                         {(localData.settings.colorFlashcards || []).map((card, index) => (
                             <div key={index} className="flex items-center space-x-2 space-x-reverse bg-white p-2 rounded-lg">
                                 <input type="color" value={card.hex} onChange={(e) => handleFlashcardChange('colorFlashcards', index, 'hex', e.target.value)} className="w-12 h-12 rounded border-none cursor-pointer"/>
-                                <input type="text" value={card.name} onChange={(e) => handleFlashcardChange('colorFlashcards', index, 'name', e.target.value)} className="flex-grow px-2 py-1 border rounded"/>
+                                <input type="text" value={card.name} onChange={(e) => handleFlashcardChange('colorFlashcards', index, 'name', e.target.value)} className="flex-grow px-2 py-1 border rounded text-black"/>
                                 <button onClick={() => handleDeleteFlashcard('colorFlashcards', index)} className="p-1 text-red-500"><TrashIcon className="w-5 h-5"/></button>
                             </div>
                         ))}
@@ -771,9 +771,9 @@ const handleDeletePuzzleImage = (pageId: string) => {
                      <div className="mt-4 space-y-2">
                         {(localData.settings.numberFlashcards || []).map((card, index) => (
                             <div key={index} className="grid grid-cols-4 gap-2 items-center bg-white p-2 rounded-lg">
-                                <input type="number" value={card.number} onChange={(e) => handleFlashcardChange('numberFlashcards', index, 'number', parseInt(e.target.value, 10))} className="w-full px-2 py-1 border rounded"/>
-                                <input type="text" value={card.word} onChange={(e) => handleFlashcardChange('numberFlashcards', index, 'word', e.target.value)} className="w-full px-2 py-1 border rounded"/>
-                                <input type="text" value={card.representation} onChange={(e) => handleFlashcardChange('numberFlashcards', index, 'representation', e.target.value)} className="w-full px-2 py-1 border rounded"/>
+                                <input type="number" value={card.number} onChange={(e) => handleFlashcardChange('numberFlashcards', index, 'number', parseInt(e.target.value, 10))} className="w-full px-2 py-1 border rounded text-black"/>
+                                <input type="text" value={card.word} onChange={(e) => handleFlashcardChange('numberFlashcards', index, 'word', e.target.value)} className="w-full px-2 py-1 border rounded text-black"/>
+                                <input type="text" value={card.representation} onChange={(e) => handleFlashcardChange('numberFlashcards', index, 'representation', e.target.value)} className="w-full px-2 py-1 border rounded text-black"/>
                                 <button onClick={() => handleDeleteFlashcard('numberFlashcards', index)} className="p-1 text-red-500 justify-self-center"><TrashIcon className="w-5 h-5"/></button>
                             </div>
                         ))}
@@ -790,8 +790,8 @@ const handleDeletePuzzleImage = (pageId: string) => {
                         {(localData.settings.arabicAlphabetData || []).map((card, index) => (
                             <div key={index} className="grid grid-cols-[auto_1fr_1fr_1fr_auto] gap-2 items-center bg-white p-2 rounded-lg">
                                 <img src={card.image} alt={card.word} className="w-10 h-10 bg-slate-200 rounded object-contain"/>
-                                <input type="text" value={card.letter} onChange={(e) => handleFlashcardChange('arabicAlphabetData', index, 'letter', e.target.value)} className="w-full px-2 py-1 border rounded" placeholder="الحرف"/>
-                                <input type="text" value={card.word} onChange={(e) => handleFlashcardChange('arabicAlphabetData', index, 'word', e.target.value)} className="w-full px-2 py-1 border rounded" placeholder="الكلمة"/>
+                                <input type="text" value={card.letter} onChange={(e) => handleFlashcardChange('arabicAlphabetData', index, 'letter', e.target.value)} className="w-full px-2 py-1 border rounded text-black" placeholder="الحرف"/>
+                                <input type="text" value={card.word} onChange={(e) => handleFlashcardChange('arabicAlphabetData', index, 'word', e.target.value)} className="w-full px-2 py-1 border rounded text-black" placeholder="الكلمة"/>
                                 <input type="file" accept="image/*" onChange={(e) => handleFlashcardImageChange('arabicAlphabetData', index, e)} className="text-xs w-full"/>
                                 <button onClick={() => handleDeleteFlashcard('arabicAlphabetData', index)} className="p-1 text-red-500 justify-self-center"><TrashIcon className="w-5 h-5"/></button>
                             </div>
@@ -809,8 +809,8 @@ const handleDeletePuzzleImage = (pageId: string) => {
                         {(localData.settings.englishAlphabetData || []).map((card, index) => (
                            <div key={index} className="grid grid-cols-[auto_1fr_1fr_1fr_auto] gap-2 items-center bg-white p-2 rounded-lg">
                                 <img src={card.image} alt={card.word} className="w-10 h-10 bg-slate-200 rounded object-contain"/>
-                                <input type="text" value={card.letter} onChange={(e) => handleFlashcardChange('englishAlphabetData', index, 'letter', e.target.value)} className="w-full px-2 py-1 border rounded" placeholder="Letter"/>
-                                <input type="text" value={card.word} onChange={(e) => handleFlashcardChange('englishAlphabetData', index, 'word', e.target.value)} className="w-full px-2 py-1 border rounded" placeholder="Word"/>
+                                <input type="text" value={card.letter} onChange={(e) => handleFlashcardChange('englishAlphabetData', index, 'letter', e.target.value)} className="w-full px-2 py-1 border rounded text-black" placeholder="Letter"/>
+                                <input type="text" value={card.word} onChange={(e) => handleFlashcardChange('englishAlphabetData', index, 'word', e.target.value)} className="w-full px-2 py-1 border rounded text-black" placeholder="Word"/>
                                 <input type="file" accept="image/*" onChange={(e) => handleFlashcardImageChange('englishAlphabetData', index, e)} className="text-xs w-full"/>
                                 <button onClick={() => handleDeleteFlashcard('englishAlphabetData', index)} className="p-1 text-red-500 justify-self-center"><TrashIcon className="w-5 h-5"/></button>
                             </div>
@@ -828,7 +828,7 @@ const handleDeletePuzzleImage = (pageId: string) => {
                         {(localData.settings.shapeFlashcards || []).map((card, index) => (
                            <div key={index} className="flex items-center space-x-2 space-x-reverse bg-white p-2 rounded-lg">
                                 <img src={card.image} alt={card.name} className="w-12 h-12 bg-slate-200 rounded object-contain"/>
-                                <input type="text" value={card.name} onChange={(e) => handleFlashcardChange('shapeFlashcards', index, 'name', e.target.value)} className="flex-grow px-2 py-1 border rounded"/>
+                                <input type="text" value={card.name} onChange={(e) => handleFlashcardChange('shapeFlashcards', index, 'name', e.target.value)} className="flex-grow px-2 py-1 border rounded text-black"/>
                                 <input type="file" accept="image/*" onChange={(e) => handleFlashcardImageChange('shapeFlashcards', index, e)} className="text-xs w-28"/>
                                 <button onClick={() => handleDeleteFlashcard('shapeFlashcards', index)} className="p-1 text-red-500"><TrashIcon className="w-5 h-5"/></button>
                             </div>
@@ -846,7 +846,7 @@ const handleDeletePuzzleImage = (pageId: string) => {
                         {(localData.settings.funnyFlashcards || []).map((card, index) => (
                            <div key={index} className="flex items-center space-x-2 space-x-reverse bg-white p-2 rounded-lg">
                                 <img src={card.image} alt={card.name} className="w-12 h-12 bg-slate-200 rounded object-contain"/>
-                                <input type="text" value={card.name} onChange={(e) => handleFlashcardChange('funnyFlashcards', index, 'name', e.target.value)} className="flex-grow px-2 py-1 border rounded"/>
+                                <input type="text" value={card.name} onChange={(e) => handleFlashcardChange('funnyFlashcards', index, 'name', e.target.value)} className="flex-grow px-2 py-1 border rounded text-black"/>
                                 <input type="file" accept="image/*" onChange={(e) => handleFlashcardImageChange('funnyFlashcards', index, e)} className="text-xs w-28"/>
                                 <button onClick={() => handleDeleteFlashcard('funnyFlashcards', index)} className="p-1 text-red-500"><TrashIcon className="w-5 h-5"/></button>
                             </div>
@@ -875,11 +875,11 @@ const handleDeletePuzzleImage = (pageId: string) => {
                                 <div className="flex-grow space-y-2">
                                      <div>
                                         <label className="block text-sm font-bold text-gray-600 mb-1">English Word</label>
-                                        <input type="text" value={card.englishWord} onChange={(e) => handleEnglishWordChange(card.id, 'englishWord', e.target.value)} className="w-full px-3 py-1 bg-white border border-blue-200 rounded-lg" dir="ltr"/>
+                                        <input type="text" value={card.englishWord} onChange={(e) => handleEnglishWordChange(card.id, 'englishWord', e.target.value)} className="w-full px-3 py-1 bg-white text-black border border-blue-200 rounded-lg" dir="ltr"/>
                                     </div>
                                      <div>
                                         <label className="block text-sm font-bold text-gray-600 mb-1">المعنى بالعربية</label>
-                                        <input type="text" value={card.arabicMeaning} onChange={(e) => handleEnglishWordChange(card.id, 'arabicMeaning', e.target.value)} className="w-full px-3 py-1 bg-white border border-blue-200 rounded-lg"/>
+                                        <input type="text" value={card.arabicMeaning} onChange={(e) => handleEnglishWordChange(card.id, 'arabicMeaning', e.target.value)} className="w-full px-3 py-1 bg-white text-black border border-blue-200 rounded-lg"/>
                                     </div>
                                 </div>
                                 <button onClick={() => handleDeleteEnglishWord(card.id)} className="p-2 text-red-600 hover:text-red-800 bg-red-100 rounded-full flex-shrink-0">
@@ -927,7 +927,7 @@ const handleDeletePuzzleImage = (pageId: string) => {
                                     value={quiz.questionText}
                                     onChange={(e) => handleQuizChange(quiz.id, e.target.value)}
                                     rows={2}
-                                    className="flex-grow font-bold text-lg px-2 py-1 bg-white border-2 border-blue-200 rounded-lg shadow-inner focus:ring-yellow-400 focus:border-yellow-400"
+                                    className="flex-grow font-bold text-lg px-2 py-1 bg-white text-black border-2 border-blue-200 rounded-lg shadow-inner focus:ring-yellow-400 focus:border-yellow-400"
                                 />
                                 <button onClick={() => handleDeleteQuiz(quiz.id)} className="p-2 text-red-600 hover:text-red-800 mr-2"><TrashIcon className="w-5 h-5"/></button>
                             </div>
@@ -945,7 +945,7 @@ const handleDeletePuzzleImage = (pageId: string) => {
                                             type="text"
                                             value={option}
                                             onChange={(e) => handleOptionChange(quiz.id, index, e.target.value)}
-                                            className="w-full px-3 py-1 bg-white border border-blue-200 rounded-lg"
+                                            className="w-full px-3 py-1 bg-white text-black border border-blue-200 rounded-lg"
                                         />
                                         <button onClick={() => handleDeleteOption(quiz.id, index)} className="p-1 text-red-500 hover:text-red-700"><TrashIcon className="w-4 h-4"/></button>
                                     </div>
@@ -973,7 +973,7 @@ const handleDeletePuzzleImage = (pageId: string) => {
                                   type="text" 
                                   value={drawing.title} 
                                   onChange={(e) => handleDrawingTitleChange(drawing.id, e.target.value)}
-                                  className="w-full text-xs text-center bg-white/80 rounded px-1 py-0.5 mb-2"
+                                  className="w-full text-xs text-center text-black bg-white/80 rounded px-1 py-0.5 mb-2"
                                 />
                                 <button onClick={() => handleDeleteDrawing(drawing.id)} className="text-white bg-red-500 rounded-full p-2"><TrashIcon className="w-5 h-5"/></button>
                             </div>
@@ -1020,7 +1020,7 @@ const handleDeletePuzzleImage = (pageId: string) => {
                                         value={fact.text}
                                         onChange={(e) => handleFunFactChange(fact.id, e.target.value)}
                                         rows={2}
-                                        className="w-full px-3 py-2 bg-white border-2 border-blue-200 rounded-lg shadow-inner focus:ring-yellow-400 focus:border-yellow-400 resize-y"
+                                        className="w-full px-3 py-2 bg-white text-black border-2 border-blue-200 rounded-lg shadow-inner focus:ring-yellow-400 focus:border-yellow-400 resize-y"
                                         placeholder="اكتب المعلومة هنا..."
                                     />
                                 </div>
@@ -1045,11 +1045,11 @@ const handleDeletePuzzleImage = (pageId: string) => {
                 </div>
                 <div>
                     <label className="block text-sm font-bold text-gray-600 mb-1">رابط Gist Raw URL</label>
-                    <input type="text" name="rawUrl" value={localData.gist.rawUrl} onChange={handleGistChange} placeholder="https://gist.githubusercontent.com/user/id/raw/file.json" className="w-full px-4 py-2 bg-white border-2 border-blue-200 rounded-full shadow-inner"/>
+                    <input type="text" name="rawUrl" value={localData.gist.rawUrl} onChange={handleGistChange} placeholder="https://gist.githubusercontent.com/user/id/raw/file.json" className="w-full px-4 py-2 bg-white text-black border-2 border-blue-200 rounded-full shadow-inner"/>
                 </div>
                  <div>
                     <label className="block text-sm font-bold text-gray-600 mb-1">GitHub Personal Access Token</label>
-                    <input type="password" name="accessToken" value={localData.gist.accessToken} onChange={handleGistChange} placeholder="أدخل التوكن الخاص بك هنا" className="w-full px-4 py-2 bg-white border-2 border-blue-200 rounded-full shadow-inner"/>
+                    <input type="password" name="accessToken" value={localData.gist.accessToken} onChange={handleGistChange} placeholder="أدخل التوكن الخاص بك هنا" className="w-full px-4 py-2 bg-white text-black border-2 border-blue-200 rounded-full shadow-inner"/>
                     <p className="text-xs text-gray-500 mt-1">
                         مطلوب فقط لحفظ البيانات. يجب أن يكون لديه صلاحية 'gist'.
                         <a href="https://github.com/settings/tokens/new?scopes=gist" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline mr-1">إنشاء توكن جديد</a>
