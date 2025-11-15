@@ -227,7 +227,12 @@ const App: React.FC = () => {
     const [activeMainTab, setActiveMainTab] = useState<MainTab>('stories');
 
     const backgroundMusicRef = useRef<HTMLAudioElement>(null);
-    const [isMuted, setIsMuted] = useState(true);
+    const [isMuted, setIsMuted] = useState(false); // Autoplay unmuted
+    const [showMuteArrow, setShowMuteArrow] = useState(false);
+
+    const [settingsClickCount, setSettingsClickCount] = useState(0);
+    const [isSettingsButtonVisible, setIsSettingsButtonVisible] = useState(false);
+    const settingsClickTimeout = useRef<number | null>(null);
 
     useEffect(() => {
         if (GIST_RAW_URL) {
@@ -285,25 +290,38 @@ const App: React.FC = () => {
     useEffect(() => {
         const audioEl = backgroundMusicRef.current;
         if (audioEl && appData.settings.backgroundMusicUrl) {
-            // Try to play. It will be muted because of the initial state.
+            audioEl.muted = isMuted;
             const playPromise = audioEl.play();
             if (playPromise !== undefined) {
                 playPromise.catch(error => {
-                    // Autoplay was prevented. User will need to interact to start music.
-                    console.log("Music autoplay was prevented by the browser.");
+                    console.log("Autoplay with sound was prevented. Falling back to muted.", error);
+                    if (!isMuted) {
+                        setIsMuted(true);
+                        setShowMuteArrow(true);
+                    }
                 });
             }
         }
-    }, [appData.settings.backgroundMusicUrl]);
+    }, [appData.settings.backgroundMusicUrl, isMuted]);
 
-    useEffect(() => {
-        if (backgroundMusicRef.current) {
-            backgroundMusicRef.current.muted = isMuted;
-            if(!isMuted) {
-                backgroundMusicRef.current.play().catch(e => console.error("BG Music play failed:", e));
-            }
+    const handleLogoClick = () => {
+        if (settingsClickTimeout.current) {
+            clearTimeout(settingsClickTimeout.current);
         }
-    }, [isMuted]);
+        
+        const newClickCount = settingsClickCount + 1;
+        setSettingsClickCount(newClickCount);
+
+        if (newClickCount >= 5) {
+            setIsSettingsButtonVisible(true);
+            setSettingsClickCount(0); // Reset after showing
+        }
+
+        // Reset count if clicks are too far apart (e.g., > 1.5 seconds)
+        settingsClickTimeout.current = window.setTimeout(() => {
+            setSettingsClickCount(0);
+        }, 1500);
+    };
 
     const handleStorySelect = (story: Story) => {
         const activeAds = appData.advertisements?.filter(ad => ad.enabled && ad.imageUrl);
@@ -428,7 +446,7 @@ const App: React.FC = () => {
                 <div className="min-h-screen bg-black/50 backdrop-blur-sm">
                     <header className="sticky top-0 z-40 bg-slate-900/80 backdrop-blur-lg shadow-lg">
                         <div className="container mx-auto px-4 py-3 flex justify-between items-center">
-                            <div className="flex items-center space-x-3 space-x-reverse">
+                            <div className="flex items-center space-x-3 space-x-reverse" onClick={handleLogoClick} style={{ cursor: 'pointer' }} title="انقر 5 مرات لإظهار الإعدادات">
                                 <img src={appData.settings.logoUrl} alt="Logo" className="h-12 w-12 rounded-full object-cover" />
                                 <h1 className="text-xl sm:text-2xl font-bold">{appData.settings.siteTitle}</h1>
                             </div>
@@ -446,13 +464,31 @@ const App: React.FC = () => {
 
                             <div className="flex items-center space-x-2 space-x-reverse">
                                  {appData.settings.backgroundMusicUrl && (
-                                     <button onClick={() => setIsMuted(!isMuted)} className="p-2 bg-slate-800 rounded-full hover:bg-slate-700 transition-colors">
-                                        {isMuted ? <SpeakerOffIcon className="w-6 h-6"/> : <SpeakerOnIcon className="w-6 h-6"/>}
-                                    </button>
+                                     <div className="relative">
+                                        <button 
+                                            onClick={() => {
+                                                setIsMuted(!isMuted);
+                                                setShowMuteArrow(false);
+                                            }} 
+                                            className="p-2 bg-slate-800 rounded-full hover:bg-slate-700 transition-colors">
+                                            {isMuted ? <SpeakerOffIcon className="w-6 h-6"/> : <SpeakerOnIcon className="w-6 h-6"/>}
+                                        </button>
+                                        {showMuteArrow && (
+                                            <div className="absolute top-[-50px] left-[-30px] w-16 h-16 transform -rotate-12 pointer-events-none animate-bounce text-yellow-300">
+                                                <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ filter: 'drop-shadow(2px 2px 2px rgba(0,0,0,0.5))' }}>
+                                                    <path d="M30 80 C 40 40, 80 50, 90 20" stroke="currentColor" strokeWidth="10" strokeLinecap="round" strokeLinejoin="round"/>
+                                                    <path d="M95 15 L90 28 L78 20 Z" fill="currentColor"/>
+                                                </svg>
+                                                <p className="text-xs font-bold absolute -bottom-0 right-0 transform -rotate-12">شغّل الصوت</p>
+                                            </div>
+                                        )}
+                                     </div>
                                  )}
-                                <button onClick={() => handleOpenSettings()} className="p-2 bg-slate-800 rounded-full hover:bg-slate-700 transition-colors">
-                                    <SettingsIcon className="w-6 h-6" />
-                                </button>
+                                {isSettingsButtonVisible && (
+                                  <button onClick={() => handleOpenSettings()} className="p-2 bg-slate-800 rounded-full hover:bg-slate-700 transition-colors animate-fade-in">
+                                      <SettingsIcon className="w-6 h-6" />
+                                  </button>
+                                )}
                             </div>
                         </div>
                     </header>
