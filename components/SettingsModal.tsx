@@ -461,45 +461,71 @@ const handleDeletePuzzleImage = (pageId: string) => {
       try {
           const url = new URL(localData.gist.rawUrl);
           const pathParts = url.pathname.split('/');
-          if(pathParts.length >= 4 && pathParts[3] === 'raw') {
+          // Check for raw URL format: /user/gistId/raw/.../filename
+          if (pathParts.length >= 5 && pathParts[3] === 'raw') {
               const gistId = pathParts[2];
-              const filename = pathParts[5];
+              const filename = pathParts[pathParts.length - 1];
               return { gistId, filename };
+          }
+          // Fallback for non-raw URL format, e.g., https://gist.github.com/user/id
+          if (pathParts.length >= 3) {
+              const gistId = pathParts[2];
+              return { gistId, filename: null };
           }
       } catch (e) { /* Invalid URL */ }
       return { gistId: null, filename: null };
-  }
+  };
 
   const handleSyncLoad = async () => {
     if (!localData.gist.rawUrl) { alert("الرجاء إدخال رابط Gist Raw URL"); return; }
+    const { gistId, filename: rawFilename } = getGistIdAndFile();
+
+    if (!gistId) {
+        alert("رابط Gist Raw URL غير صالح.");
+        return;
+    }
 
     try {
-        const response = await fetch(localData.gist.rawUrl, { cache: 'no-store' });
+        const response = await fetch(`https://api.github.com/gists/${gistId}`);
         if (!response.ok) throw new Error(`خطأ في الشبكة: ${response.statusText}`);
-        const dataFromGist = await response.json();
+        const gistData = await response.json();
+        
+        const filename = rawFilename || Object.keys(gistData.files).find(f => f.endsWith('.json'));
+        if (!filename || !gistData.files[filename]) {
+             throw new Error("لم يتم العثور على ملف .json في الـ Gist.");
+        }
+
+        const file = gistData.files[filename];
+        let content: string;
+        if (file.truncated) {
+            const rawResponse = await fetch(file.raw_url);
+            if (!rawResponse.ok) {
+                throw new Error(`Failed to fetch full content from raw_url: ${rawResponse.statusText}`);
+            }
+            content = await rawResponse.text();
+        } else {
+            content = file.content;
+        }
+        
+        const dataFromGist = JSON.parse(content);
 
         if (window.confirm("تم جلب البيانات من Gist. هل تريد استبدال البيانات الحالية؟")) {
             const currentGistSettings = localData.gist;
             
-            setLocalData(prev => ({
+            const newData = {
                 ...dataFromGist,
                 gist: {
                     ...dataFromGist.gist,
                     rawUrl: currentGistSettings.rawUrl,
                     accessToken: currentGistSettings.accessToken,
                 }
-            }));
-             setAppData(prev => ({
-                ...dataFromGist,
-                gist: {
-                    ...dataFromGist.gist,
-                    rawUrl: currentGistSettings.rawUrl,
-                    accessToken: currentGistSettings.accessToken,
-                }
-            }));
+            };
+            
+            setLocalData(newData);
+            setAppData(newData);
             alert("تم تحديث البيانات بنجاح!");
         }
-    } catch (e) {
+    } catch (e: any) {
         alert(`فشل تحميل البيانات: ${e.message}`);
     }
   };
@@ -540,7 +566,7 @@ const handleDeletePuzzleImage = (pageId: string) => {
             throw new Error(`خطأ في واجهة GitHub: ${errorData.message}`);
         }
         alert("تم حفظ البيانات في Gist بنجاح! تم حفظ إعداداتك الجديدة في المتصفح أيضاً.");
-    } catch (e) {
+    } catch (e: any) {
         alert(`فشل حفظ البيانات: ${e.message}`);
     }
   };

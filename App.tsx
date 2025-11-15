@@ -1,4 +1,5 @@
 
+
 import React, { useState, createContext, useMemo, useEffect, useRef } from 'react';
 import { AppData, Story, Advertisement, AppSettings, EnglishWordFlashcard } from './types';
 import StoryCard from './components/StoryCard';
@@ -233,12 +234,34 @@ const App: React.FC = () => {
             const fetchInitialData = async () => {
                 try {
                     const url = new URL(GIST_RAW_URL);
-                    url.searchParams.set('t', new Date().getTime().toString());
+                    const pathParts = url.pathname.split('/');
+                    const gistId = pathParts[2];
+                    const filename = pathParts[pathParts.length - 1];
 
-                    const response = await fetch(url.toString(), { cache: 'no-store' });
-                    if (!response.ok) throw new Error(`فشل تحميل البيانات: ${response.statusText}`);
+                    if (!gistId) throw new Error("Invalid Gist URL");
+
+                    const apiResponse = await fetch(`https://api.github.com/gists/${gistId}`);
+                    if (!apiResponse.ok) throw new Error(`فشل تحميل البيانات من واجهة GitHub: ${apiResponse.statusText}`);
                     
-                    const data: AppData = await response.json();
+                    const gistData = await apiResponse.json();
+                    
+                    const file = gistData.files[filename];
+                    if (!file) {
+                        throw new Error(`File '${filename}' not found in the Gist. Available files: ${Object.keys(gistData.files).join(', ')}`);
+                    }
+    
+                    let content: string;
+                    if (file.truncated) {
+                        const rawResponse = await fetch(file.raw_url);
+                        if (!rawResponse.ok) {
+                            throw new Error(`Failed to fetch full content from raw_url: ${rawResponse.statusText}`);
+                        }
+                        content = await rawResponse.text();
+                    } else {
+                        content = file.content;
+                    }
+    
+                    const data: AppData = JSON.parse(content);
                     
                     setAppData(prevData => ({
                         ...data,
