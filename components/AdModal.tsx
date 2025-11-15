@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { Advertisement } from '../types';
+import { Advertisement, Story } from '../types';
 
 interface AdModalProps {
   ad: Advertisement;
-  onContinue: () => void;
+  story: Story;
+  onContinue: (story: Story) => void;
 }
 
-const AdModal: React.FC<AdModalProps> = ({ ad, onContinue }) => {
+const AdModal: React.FC<AdModalProps> = ({ ad, story, onContinue }) => {
   const [countdown, setCountdown] = useState(5);
 
   useEffect(() => {
@@ -36,7 +37,7 @@ const AdModal: React.FC<AdModalProps> = ({ ad, onContinue }) => {
         </div>
 
         <button
-          onClick={onContinue}
+          onClick={() => onContinue(story)}
           disabled={countdown > 0}
           className="w-full bg-green-500 text-white font-bold py-3 px-6 rounded-full hover:bg-green-600 transition-all shadow-lg border-b-4 border-green-700 active:border-b-0 active:translate-y-1 transform text-lg disabled:bg-gray-400 disabled:border-gray-500 disabled:cursor-not-allowed disabled:transform-none"
         >

@@ -1,4 +1,5 @@
 
+
 import React, { useState, createContext, useMemo, useEffect, useRef } from 'react';
 import { AppData, Story, Advertisement, AppSettings, EnglishWordFlashcard } from './types';
 import StoryCard from './components/StoryCard';
@@ -241,7 +242,7 @@ const App: React.FC = () => {
     const [currentView, setCurrentView] = useState<View>('home');
     const [activeAd, setActiveAd] = useState<Advertisement | null>(null);
     const [activeTab, setActiveTab] = useState<MainTab>('stories');
-    const [isMuted, setIsMuted] = useState(true);
+    const [isMuted, setIsMuted] = useState(false);
     const musicRef = useRef<HTMLAudioElement>(null);
     const [searchTerm, setSearchTerm] = useState('');
 
@@ -273,7 +274,8 @@ const App: React.FC = () => {
         }
     };
 
-    const handleContinueFromAd = () => {
+    const handleContinueFromAd = (storyToView: Story) => {
+        setSelectedStory(storyToView);
         setCurrentView('story');
         setActiveAd(null);
     };
@@ -426,7 +428,7 @@ const App: React.FC = () => {
         return <StoryViewer story={selectedStory} onClose={() => { setSelectedStory(null); setCurrentView('home'); }} />;
     }
     if (currentView === 'ad' && activeAd && selectedStory) {
-        return <AdModal ad={activeAd} onContinue={handleContinueFromAd} />;
+        return <AdModal ad={activeAd} story={selectedStory} onContinue={handleContinueFromAd} />;
     }
 
     return (

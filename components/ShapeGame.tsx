@@ -3,13 +3,15 @@ import { CheckIcon, ArrowRightIcon } from './Icons';
 
 interface Shape {
     name: string;
-    component: React.FC<{ className?: string }>;
+    // FIX: Add style prop to component type definition to allow color styling.
+    component: React.FC<{ className?: string; style?: React.CSSProperties }>;
 }
 
-const SvgCircle: React.FC<{ className?: string }> = ({ className }) => <svg viewBox="0 0 100 100" className={className}><circle cx="50" cy="50" r="45" fill="currentColor"/></svg>;
-const SvgSquare: React.FC<{ className?: string }> = ({ className }) => <svg viewBox="0 0 100 100" className={className}><rect x="5" y="5" width="90" height="90" rx="10" fill="currentColor"/></svg>;
-const SvgTriangle: React.FC<{ className?: string }> = ({ className }) => <svg viewBox="0 0 100 100" className={className}><polygon points="50,10 95,90 5,90" fill="currentColor"/></svg>;
-const SvgStar: React.FC<{ className?: string }> = ({ className }) => <svg viewBox="0 0 100 100" className={className}><polygon points="50,5 61,40 98,40 68,62 79,96 50,75 21,96 32,62 2,40 39,40" fill="currentColor"/></svg>;
+// FIX: Accept and pass down the style prop to the SVG element.
+const SvgCircle: React.FC<{ className?: string; style?: React.CSSProperties }> = ({ className, style }) => <svg viewBox="0 0 100 100" className={className} style={style}><circle cx="50" cy="50" r="45" fill="currentColor"/></svg>;
+const SvgSquare: React.FC<{ className?: string; style?: React.CSSProperties }> = ({ className, style }) => <svg viewBox="0 0 100 100" className={className} style={style}><rect x="5" y="5" width="90" height="90" rx="10" fill="currentColor"/></svg>;
+const SvgTriangle: React.FC<{ className?: string; style?: React.CSSProperties }> = ({ className, style }) => <svg viewBox="0 0 100 100" className={className} style={style}><polygon points="50,10 95,90 5,90" fill="currentColor"/></svg>;
+const SvgStar: React.FC<{ className?: string; style?: React.CSSProperties }> = ({ className, style }) => <svg viewBox="0 0 100 100" className={className} style={style}><polygon points="50,5 61,40 98,40 68,62 79,96 50,75 21,96 32,62 2,40 39,40" fill="currentColor"/></svg>;
 
 const SHAPES: Shape[] = [
   { name: 'دائرة', component: SvgCircle },
