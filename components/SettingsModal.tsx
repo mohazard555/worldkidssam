@@ -1055,6 +1055,18 @@ const handleDeletePuzzleImage = (pageId: string) => {
                         <a href="https://github.com/settings/tokens/new?scopes=gist" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline mr-1">إنشاء توكن جديد</a>
                     </p>
                 </div>
+
+                <div className="bg-red-100 border-l-4 border-red-500 text-red-800 p-4 rounded-r-lg mt-4" role="alert">
+                    <p className="font-bold">ملاحظة حول خطأ "Bad credentials"</p>
+                    <ul className="text-sm list-disc list-inside mt-2">
+                        <li>إذا واجهت هذا الخطأ، فهذا يعني أن رمز الوصول (Token) الذي أدخلته غير صحيح أو انتهت صلاحيته.</li>
+                        <li>تأكد من أن الرمز الذي نسخته من GitHub صحيح تمامًا.</li>
+                        <li>تأكد من أن الرمز لديه صلاحية <code className="bg-red-200 p-1 rounded text-xs">gist</code> عند إنشائه.</li>
+                        <li>إذا استمرت المشكلة، قم بإنشاء رمز وصول جديد من الرابط أعلاه وجربه.</li>
+                        <li>رمز الوصول يُحفظ في متصفحك فقط ولا تتم مشاركته مع أي جهة أخرى.</li>
+                    </ul>
+                </div>
+
                 <div className="flex space-x-2 space-x-reverse">
                     <button onClick={handleSyncLoad} className="flex-1 bg-blue-500 text-white font-bold py-2 px-4 rounded-full hover:bg-blue-600">تحميل من Gist</button>
                     <button onClick={handleSyncSave} className="flex-1 bg-green-500 text-white font-bold py-2 px-4 rounded-full hover:bg-green-600">حفظ إلى Gist</button>

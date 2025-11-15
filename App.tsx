@@ -1,6 +1,4 @@
 
-
-
 import React, { useState, createContext, useMemo, useEffect, useRef } from 'react';
 import { AppData, Story, Advertisement, AppSettings, EnglishWordFlashcard } from './types';
 import StoryCard from './components/StoryCard';
@@ -22,12 +20,18 @@ import CartoonBox from './components/CartoonBox';
 import KidsSongsSection from './components/KidsSongsSection';
 import EnglishWordsSection from './components/EnglishWordsSection';
 
+// --- CENTRAL GIST CONFIGURATION ---
+// If you provide a Gist Raw URL here, the app will fetch its data from this URL for all visitors.
+// This makes the Gist the single source of truth for the app's content.
+// If left empty, the app will use the local DEFAULT_APP_DATA.
+const GIST_RAW_URL = 'https://gist.githubusercontent.com/mohazard555/ea2b7ed29b36c869c33d6fff01580357/raw/fc0b31bc657ca1cdefa98fb456ec0cb05efb27be/worldkidssam-data.json';
+
 type View = 'home' | 'ad' | 'youtube' | 'story';
 type MainTab = 'stories' | 'games' | 'fun' | 'flashcards';
 
 interface IAppContext {
     appData: AppData;
-    setAppData: (data: AppData) => void;
+    setAppData: (data: AppData | ((prevData: AppData) => AppData)) => void;
 }
 
 export const AppContext = createContext<IAppContext | null>(null);
@@ -159,7 +163,7 @@ const DEFAULT_APP_DATA: AppData = {
             { letter: "ش", word: "شمس", image: 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48Y2lyY2xlIGN4PSI1MCIgY3k9IjUwIiByPSIzMCIgZmlsbD0iI2Y1YzUwMSIvPjxwYXRoIGQ9Ik01MCA1IEw1NSAxNSBMNDUgMTUgWiBNNSA1MCBMIDE1IDU1IEwgMTUgNDUgWiBNOTUgNTAgTDg1IDU1IEw4NSA0NSBaIE01MCA5NSBMNTUgODUgTDQ1IDg1IFoiIGZpbGw9IiNmNWM1MDEiLz48cGF0aCBkPSJNMjAgMjAgTDI1IDMwIEwxNSAzMCBaIE04MCAyMCBMNzUgMzAgTDg1IDMwIFogTTIwIDgwIEwyNSw3MCBMMTUsNzAgWiBNODAgODAgTDc1LDcwIEw4NSw3MCBaIiBmaWxsPSIjZjVjNTAxIiB0cmFuc2Zvcm09InJvdGF0ZSg0NSw1MCw1MCkiLz48L3N2Zz4=', color: 'bg-purple-500' },
             { letter: "ص", word: "صاروخ", image: 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48cGF0aCBkPSJNNTAsMTAgTDcwLDQwIEw3MCw4MCBRIDUwIDk1IDMwIDgwIEwgMzAgNDAgWiIgZmlsbD0iI2M2YzZjNiIvPjxwb2x5Z29uIHBvaW50cz0iNTAsMTAgNDAsMjUgNjAsMjUiIGZpbGw9IiNlZjQ0NDQiLz48Y2lyY2xlIGN4PSI1MCIgY3k9IjU1IiByPSIxMCIgZmlsbD0iIzNiODJmNiIvPjxwb2x5Z29uIHBvaW50cz0iMzAsODAgMjAsOTUgNDAsODAiIGZpbGw9IiNmOTczMTYiLz48cG9seWdvbiBwb2ludHM9IjcwLDgwIDYwLDgwIDgwLDk1IiBmaWxsPSIjZjk3MzE2Ii8+PC9zdmc+', color: 'bg-fuchsia-500' },
             { letter: "ض", word: "ضفدع", image: 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48cGF0aCBkPSJNMjAsNzAgQzQwLDkwIDYwLDkwIDgwLDcwIEM4NSw1NSw2NSw0NSA1MCw0NSBDMzUsNDUgMTUsNTUsMjAsNzBaIiBmaWxsPSIjMjJjNTVlIi8+PGNpcmNsZSBjeD0iNDAiIGN5PSI1NSIgcj0iOCIgZmlsbD0iI2ZmZiIvPjxjaXJjbGUgY3g9IjYwIiBjeT0iNTUiIHI9IjgiIGZpbGw9IiNmZmYiLz48Y2lyY2xlIGN4PSI0MiIgY3k9IjU1IiByPSI0IiBmaWxsPSIjMDAwIi8+PGNpcmNsZSBjeD0iNTgiIGN5PSI1NSIgcj0iNCIgZmlsbD0iIzAwMCIvPjxwYXRoIGQ9Ik00MCA3NSBDNTAgODAgNjAgNzUiIHN0cm9rZT0iIzAwMCIgc3Ryb2tlLXdpZHRoPSIyIiBmaWxsPSJub25lIi8+PC9zdmc+', color: 'bg-pink-500' },
-            { letter: "ط", word: "طائرة", image: 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48cGF0aCBkPSJNNTAsMjAgTDYwLDQwIEw5NSw0NSBMNjAsNTAgTDUwLDcwIEw0MCw1MCBMNSw0NSBMNDAsNDAgWiIgZmlsbD0iI2YxZjVmOSIvPjxwYXRoIGQ9Ik00NSw3MCBMNTUsNzAgTDU1LDg1IEw0NSw4NSBaIiBmaWxsPSIjM2I4MmY2Ii8+PC9zdmc+', color: 'bg-rose-500' },
+            { letter: "ط", word: "طائرة", image: 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48cGF0aCBkPSJNNTAsMjAgTDYwLDQwIEw5NSw0NSBMNjAsNTAgTDUwLDcwIEw0MCw1TAgTDUwLDQ1IEw0MCw0MCBaIiBmaWxsPSIjZjFmNWY5Ii8+PHBhdGggZD0iTTQ1LDcwIEw1NSw3MCBMNTUsODUgTDQ1LDg1IFoiIGZpbGw9IiMzYjgyZjYiLz48L3N2Zz4=', color: 'bg-rose-500' },
             { letter: "ظ", word: "ظرف", image: 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48cmVjdCB4PSIxMCIgeT0iMzAiIHdpZHRoPSI4MCIgaGVpZ2h0PSI0MCIgcng9IjUiIGZpbGw9IiNmZWU4YjUiLz48cGF0aCBkPSJNMTEsMzIgTDkwLDMyIEw1MCw1NSBaIiBmaWxsPSIjZmFkNzRhIi8+PC9zdmc+', color: 'bg-red-400' },
             { letter: "ع", word: "عصفور", image: 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48Y2lyY2xlIGN4PSI2MCIgY3k9IjUwIiByPSIyNSIgZmlsbD0iIzU1Y2FlMiIvPjxwYXRoIGQ9Ik02MCA1MCBDNDAgNzAgMjAgNjAgMzAgNDAgQzM1IDMwIDQwIDMwIDYwIDUwIFoiIGZpbGw9IiM1NWNhZTIiLz48cGF0aCBkPSJNNjAgNTAgQzg1IDY1IDg1IDM1IDYwIDUwIFoiIGZpbGw9IiNmOWE2MmYiLz48Y2lyY2xlIGN4PSI3MCIgY3k9IjQ1IiByPSI0IiBmaWxsPSIjMDAwIi8+PC9zdmc+', color: 'bg-orange-400' },
             { letter: "غ", word: "غيمة", image: 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48cGF0aCBkPSJNMjAsNzAgQzAsNzAgNSw0NSA0MCw0NSBDNDUsMzAgNzAsMzAgNzUsNDUgQzEwMCw0NSAxMDAsNzAsODAsNzAgWiIgZmlsbD0iI2Y4ZmFmYyIvPjwvc3ZnPg==', color: 'bg-yellow-400' },
@@ -199,7 +203,6 @@ const DEFAULT_APP_DATA: AppData = {
             { letter: "W", word: "Whale", image: 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48cGF0aCBkPSJNMTAgNTUgQzMwIDgwIDcwIDgwIDkwIDU1IEMxMTAsMzAgNDAsMjAgMTAgNTVaIiBmaWxsPSIjNjc4ZTg3Ii8+PHBhdGggZD0iTTMwIDU1IEw3MCA1NSBMNzAsODUgQzYwLDg1IDQwLDg1IDMwLDg1IFoiIGZpbGw9IiNmZmYiLz48Y2lyY2xlIGN4PSIyNSIgY3k9IjUwIiByPSI0IiBmaWxsPSIjMDAwIi8+PC9zdmc+', color: 'bg-blue-600' },
             { letter: "X", word: "Xylophone", image: 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48cGF0aCBkPSJNMjAsMjAgTDgwLDUwIEw4MCw2MCBMMjAsMzAgWiIgZmlsbD0iI2VjNDg5OSIvPjxwYXRoIGQ9Ik0yMCw0MCBMNjAsNjAgTDYwLDcwIEwyMCw1MCBaIiBmaWxsPSIjZjVjNTAxIi8+PHBhdGggZD0iTTIwLDYwIEw0MCw3MCBMNDAsODAgTDIwLDcwIFoiIGZpbGw9IiMyMmM1NWUiLz48cGF0aCBkPSJNMjAsODAgTDI1LDg1IEwyNSw5NSBMMjAsODUgWiIgZmlsbD0iIzNiODJmNiIvPjwvc3ZnPg==', color: 'bg-purple-500' },
             { letter: "Y", word: "Yarn", image: 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48Y2lyY2xlIGN4PSI1MCIgY3k9IjUwIiByPSIzNSIgZmlsbD0iI2VjNDg5OSIvPjxwYXRoIGQ9Ik0zMCA0MCBDNzAgNjAgMzAgODAgNzAgMjAiIHN0cm9rZT0iI2Y4NzA3MCIgc3Ryb2tlLXdpZHRoPSI0IiBmaWxsPSJub25lIi8+PC9zdmc+', color: 'bg-pink-500' },
-            // FIX: The 'color' property was missing for this AlphabetFlashcard object.
             { letter: "Z", word: "Zebra", image: 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48cGF0aCBkPSJNMjUgMjAgTDgwIDI1IEw4NSw4MCBMMjAgNzUgWiIgZmlsbD0iI2ZmZiIvPjxwYXRoIGQ9Ik0zMCAyMSBMMzUgMjIgTDM4IDc2IEwzMiA3NSBaIE00NSAyMiBMNTAgMjMgTDUzIDc3IEw0NyA3NiBaIE02MCAyMyBMNjUgMjQgTDY4IDc4IEw2MiA3NyBaIiBmaWxsPSIjMDAwIi8+PGNpcmNsZSBjeD0iMjUiIGN5PSIyMCIgcj0iMTUiIGZpbGw9IiNmZmYiLz48cGF0aCBkPSJNMjAgMjUgQzE4IDM1IDE1IDM1IDE1IDIwIFoiIGZpbGw9IiMwMDAiLz48Y2lyY2xlIGN4PSIyMiIgY3k9IjE4IiByPSIyIiBmaWxsPSIjMDAwIi8+PC9zdmc+', color: 'bg-slate-400' },
         ],
         englishWordFlashcards: [],
@@ -212,6 +215,8 @@ const DEFAULT_APP_DATA: AppData = {
 
 const App: React.FC = () => {
     const [appData, setAppData] = useLocalStorage<AppData>('stories-app-data', DEFAULT_APP_DATA);
+    const [isLoading, setIsLoading] = useState(!!GIST_RAW_URL);
+    const [error, setError] = useState<string | null>(null);
     const [selectedStory, setSelectedStory] = useState<Story | null>(null);
     const [isSettingsOpen, setIsSettingsOpen] = useState(false);
     const [settingsTab, setSettingsTab] = useState<Tab>('general');
@@ -222,6 +227,36 @@ const App: React.FC = () => {
 
     const backgroundMusicRef = useRef<HTMLAudioElement>(null);
     const [isMuted, setIsMuted] = useState(true);
+
+    useEffect(() => {
+        if (GIST_RAW_URL) {
+            const fetchInitialData = async () => {
+                try {
+                    const url = new URL(GIST_RAW_URL);
+                    url.searchParams.set('t', new Date().getTime().toString());
+
+                    const response = await fetch(url.toString(), { cache: 'no-store' });
+                    if (!response.ok) throw new Error(`فشل تحميل البيانات: ${response.statusText}`);
+                    
+                    const data: AppData = await response.json();
+                    
+                    setAppData(prevData => ({
+                        ...data,
+                        gist: {
+                            rawUrl: data.gist.rawUrl,
+                            accessToken: prevData.gist.accessToken,
+                        }
+                    }));
+                } catch (e: any) {
+                    console.error("Gist fetch error:", e);
+                    setError("عذراً، لم نتمكن من تحميل القصص والمحتويات. الرجاء المحاولة مرة أخرى لاحقاً.");
+                } finally {
+                    setIsLoading(false);
+                }
+            };
+            fetchInitialData();
+        }
+    }, []);
 
     useEffect(() => {
         if (backgroundMusicRef.current) {
@@ -266,6 +301,28 @@ const App: React.FC = () => {
             story.title.toLowerCase().includes(searchTerm.toLowerCase())
         );
     }, [searchTerm, appData.stories]);
+
+    if (isLoading) {
+        return (
+            <div dir="rtl" className="min-h-screen bg-slate-900 text-white flex flex-col items-center justify-center">
+                <svg className="animate-spin h-12 w-12 text-yellow-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                <p className="mt-4 text-xl font-bold">جاري تحميل القصص والمحتويات...</p>
+            </div>
+        );
+    }
+
+    if (error) {
+        return (
+            <div dir="rtl" className="min-h-screen bg-slate-900 text-white flex flex-col items-center justify-center p-4 text-center">
+                 <div className="text-5xl mb-4">😢</div>
+                <h2 className="text-2xl font-bold text-red-400">حدث خطأ</h2>
+                <p className="mt-2 text-slate-300 max-w-md">{error}</p>
+            </div>
+        );
+    }
 
     const MainTabButton: React.FC<{tab: MainTab, label: string, icon: React.ReactNode}> = ({tab, label, icon}) => (
          <button onClick={() => setActiveMainTab(tab)} className={`flex-1 flex items-center justify-center space-x-2 space-x-reverse py-3 px-2 sm:px-4 font-bold text-lg rounded-t-2xl transition-all border-b-4 ${activeMainTab === tab ? 'bg-slate-800/50 text-yellow-300 border-yellow-300' : 'bg-slate-900/50 text-white/70 hover:bg-slate-900/80 border-transparent'}`}>
@@ -326,7 +383,6 @@ const App: React.FC = () => {
                 return null;
         }
     };
-
 
     return (
         <AppContext.Provider value={{ appData, setAppData }}>
@@ -421,5 +477,4 @@ const App: React.FC = () => {
     );
 };
 
-// FIX: Add default export for the App component.
 export default App;

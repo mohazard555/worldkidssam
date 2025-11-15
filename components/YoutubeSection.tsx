@@ -1,6 +1,7 @@
-import React, { useState, useContext, useEffect, useMemo } from 'react';
+
+import React, { useState, useContext, useEffect, useMemo, useRef } from 'react';
 import { AppContext } from '../App';
-import { PlayIcon, ShareIcon, SearchIcon } from './Icons';
+import { PlayIcon, ShareIcon, SearchIcon, WhatsAppIcon, FacebookIcon, TelegramIcon, CopyIcon, CheckIcon } from './Icons';
 
 interface VideoData {
     url: string;
@@ -14,6 +15,21 @@ const YoutubeSection: React.FC = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [videoData, setVideoData] = useState<VideoData[]>([]);
     const [isLoading, setIsLoading] = useState(false);
+    const [activeShareMenu, setActiveShareMenu] = useState<string | null>(null);
+    const [copySuccessVideoId, setCopySuccessVideoId] = useState<string | null>(null);
+    const shareMenuRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (shareMenuRef.current && !shareMenuRef.current.contains(event.target as Node)) {
+                setActiveShareMenu(null);
+            }
+        };
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, []);
 
     const urls = useMemo(() => (appData.settings.youtubeUrls || []).filter(url => url.trim() !== ''), [appData.settings.youtubeUrls]);
 
@@ -40,7 +56,6 @@ const YoutubeSection: React.FC = () => {
                     const videoId = getYoutubeVideoId(url);
                     if (!videoId) return null;
                     try {
-                        // Use a CORS-friendly oEmbed proxy
                         const response = await fetch(`https://noembed.com/embed?url=https://www.youtube.com/watch?v=${videoId}`);
                         if (!response.ok) throw new Error('Failed to fetch');
                         const data = await response.json();
@@ -52,7 +67,6 @@ const YoutubeSection: React.FC = () => {
                         };
                     } catch (error) {
                         console.error('Failed to fetch video data for', url, error);
-                        // Return fallback data
                         return {
                             url,
                             videoId,
@@ -78,26 +92,28 @@ const YoutubeSection: React.FC = () => {
     }, [searchTerm, videoData]);
 
 
-    const handleShare = async (title: string, url: string) => {
-        if (navigator.share) {
+    const handleShare = async (title: string, url: string, videoId: string) => {
+        if (navigator.share) { // Web Share API for mobile
             try {
-                await navigator.share({
-                    title: title,
-                    text: `شاهد هذا الفيديو الرائع للأطفال: ${title}`,
-                    url: url,
-                });
+                await navigator.share({ title, url, text: `شاهد هذا الفيديو الرائع للأطفال: ${title}` });
             } catch (error) {
                 console.error('Share failed:', error);
             }
-        } else {
-            try {
-                await navigator.clipboard.writeText(url);
-                alert('تم نسخ الرابط! يمكنك الآن مشاركته.');
-            } catch (err) {
-                console.error('Failed to copy: ', err);
-                alert('فشل نسخ الرابط.');
-            }
+        } else { // Fallback for desktop
+            setActiveShareMenu(prev => (prev === videoId ? null : videoId));
         }
+    };
+
+    const handleCopy = (url: string, videoId: string) => {
+        navigator.clipboard.writeText(url).then(() => {
+            setCopySuccessVideoId(videoId);
+            setTimeout(() => {
+                setCopySuccessVideoId(null);
+                setActiveShareMenu(null);
+            }, 1500);
+        }, () => {
+            alert('فشل النسخ');
+        });
     };
 
     if (urls.length === 0) {
@@ -143,15 +159,25 @@ const YoutubeSection: React.FC = () => {
                                     </p>
                                     
                                     <div className="flex justify-between items-center mt-3 pt-2 border-t border-slate-700/50">
-                                        <div className="flex items-center space-x-2 space-x-reverse">
+                                        <div className="relative">
                                             <button
-                                                onClick={() => handleShare(video.title, video.url)}
+                                                onClick={() => handleShare(video.title, video.url, video.videoId)}
                                                 className="flex items-center space-x-1 space-x-reverse text-sm text-slate-300 hover:text-white transition-colors"
                                                 aria-label="مشاركة الفيديو"
                                             >
                                                 <ShareIcon className="w-5 h-5" />
                                                 <span>مشاركة</span>
                                             </button>
+                                            {activeShareMenu === video.videoId && (
+                                                <div ref={shareMenuRef} className="absolute bottom-full mb-2 right-0 bg-slate-900/90 backdrop-blur-sm rounded-lg shadow-2xl p-2 flex items-center gap-1 z-10 border border-slate-700">
+                                                    <a href={`https://api.whatsapp.com/send?text=${encodeURIComponent(video.title + ' ' + video.url)}`} target="_blank" rel="noopener noreferrer" className="p-2 text-green-500 hover:bg-slate-700 rounded-full" title="مشاركة عبر واتساب"><WhatsAppIcon className="w-6 h-6"/></a>
+                                                    <a href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(video.url)}`} target="_blank" rel="noopener noreferrer" className="p-2 text-blue-500 hover:bg-slate-700 rounded-full" title="مشاركة عبر فيسبوك"><FacebookIcon className="w-6 h-6"/></a>
+                                                    <a href={`https://t.me/share/url?url=${encodeURIComponent(video.url)}&text=${encodeURIComponent(video.title)}`} target="_blank" rel="noopener noreferrer" className="p-2 text-sky-400 hover:bg-slate-700 rounded-full" title="مشاركة عبر تليغرام"><TelegramIcon className="w-6 h-6"/></a>
+                                                    <button onClick={() => handleCopy(video.url, video.videoId)} className="p-2 text-slate-300 hover:bg-slate-700 rounded-full" title="نسخ الرابط">
+                                                        {copySuccessVideoId === video.videoId ? <CheckIcon className="w-6 h-6 text-green-400"/> : <CopyIcon className="w-6 h-6"/>}
+                                                    </button>
+                                                </div>
+                                            )}
                                         </div>
                                         <a 
                                             href={video.url} 
